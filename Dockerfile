@@ -13,13 +13,14 @@ RUN yarn install --frozen-lockfile
 COPY . .
 
 # Build the application
-RUN yarn build
+RUN yarn prod
 
 # Production stage
 FROM nginx:alpine
 
 # Copy built files to nginx
-COPY --from=builder /app/dist /usr/share/nginx/html
+# TODO : Talk to frontend team to change... this path.
+COPY --from=builder /app/../backend/src/main/resources/static /usr/share/nginx/html
 
 # Copy nginx configuration (optional)
 # COPY nginx.conf /etc/nginx/nginx.conf
