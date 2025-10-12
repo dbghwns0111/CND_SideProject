@@ -1,9 +1,9 @@
-// src/App.js
+// src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import CounselingPage from './pages/CounselingPage';
-import MainPage from './pages/MainPage'; // MainPage 컴포넌트 import
-import ProfilePage from './pages/ProfilePage';
+import CounselingPage from '../pages/CounselingPage';
+import MainPage from '../pages/MainPage'; // MainPage 컴포넌트 import
+import ProfilePage from '../pages/ProfilePage';
 
 function App() {
   return (

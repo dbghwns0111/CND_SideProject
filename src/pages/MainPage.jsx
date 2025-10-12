@@ -1,156 +1,135 @@
 // src/pages/MainPage.js
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MagnifyingGlassIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { ArrowRightCircleIcon } from "@heroicons/react/24/outline";
+import { MagnifyingGlassIcon, Bars3Icon, XMarkIcon, ArrowRightCircleIcon } from "@heroicons/react/24/outline";
+import {lawkeyLogo, enterOn, enterOff, enterLoading} from '../components/icons';
 
 function MainPage() {
-    // 사이드바 열림/닫힘 상태
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    // 프롬프트 입력
-    const [inputValue, setInputValue] = useState('');
-    // 페이지 이동을 위한 useNavigate 훅
-    const navigate = useNavigate();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [inputValue, setInputValue] = useState('');
+  const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (inputValue.trim() === '') return;
-        // state로 값 전달하면서 CounselingPage로 이동
-        navigate('/counseling', { state: { initialMessage: inputValue } });
-    };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (inputValue.trim() === '') return;
+    navigate('/counseling', { state: { initialMessage: inputValue } });
+  };
 
-    return (
-        <div className="flex flex-col md:flex-row w-full min-h-screen">
+  return (
+    <div className="flex w-full min-h-screen bg-gradient-to-br from-green-50 to-yellow-50">
 
-            {/* Sidebar */}
-            {isSidebarOpen && (
-                <aside className="flex flex-col w-full md:w-80 p-6 bg-gray-100 border-r border-gray-200 relative">
-                    {/* 닫기 버튼 (X) */}
-                    <button
-                        className="absolute top-4 right-4 text-gray-500 hover:text-black"
-                        onClick={() => setIsSidebarOpen(false)}
-                    >
-                        <XMarkIcon className="w-6 h-6" />
-                    </button>
+      {/* Sidebar */}
+      {isSidebarOpen && (
+        <aside className="flex flex-col w-full md:w-80 p-6 bg-white/70 backdrop-blur-sm border-r border-gray-200 shadow-sm">
+          {/* 닫기 버튼 */}
+          <button
+            className="absolute top-4 right-4 text-gray-500 hover:text-black"
+            onClick={() => setIsSidebarOpen(false)}
+          >
+            <XMarkIcon className="w-6 h-6" />
+          </button>
 
-                    <div className="flex flex-col space-y-4 mt-8">
-                        <button className="w-full py-4 px-4 bg-gray-300 rounded-lg text-black font-semibold text-center">
-                        + 새 상담 시작
-                        </button>
-                        <div className="relative">
-                        <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                        <input
-                            type="text"
-                            placeholder="상담내역 검색"
-                            className="w-full py-2 pl-10 pr-4 rounded-lg border border-gray-300 bg-white focus:outline-none"
-                        />
-                        </div>
-                    </div>
+          {/* 로고 */}
+          <div className="flex items-center space-x-2 mb-6">
+            <div className="flex items-center space-x-2 text-lg font-semibold text-green-700">
+              <img src={lawkeyLogo} alt="lawkey" className="w-7 h-7" />
+              <span>lawkey</span>
+            </div>
+          </div>
 
-                    {/** 상담 보관 안내문 */}
-                    <div className="flex flex-col h-full">
-                        <div className="flex-grow flex items-center justify-center">
-                        <div className="text-sm text-gray-500 text-center leading-relaxed">
-                            <p>상담은 마지막 대화 이후</p>
-                            <p><span className="font-bold text-black">30일간 보관</span>되며</p>
-                            <p>회원님의 개인정보 보호를 위해</p>
-                            <p>자동 삭제됩니다.</p>
-                        </div>
-                        </div>
-                        <div className="text-center text-gray-500 py-2 border-t">
-                        비회원 상담 기록<br />0/1
-                        </div>
-                    </div>
-                </aside>
-            )}
+          {/* 새 상담 & 검색 */}
+          <div className="flex flex-col space-y-4">
+            <button className="w-full py-3 px-4 bg-green-100 hover:bg-green-200 rounded-lg text-green-800 font-medium">
+              + 새 상담 시작
+            </button>
+            <div className="relative">
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="상담내역 검색"
+                className="w-full py-2 pl-10 pr-4 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-1 focus:ring-green-400"
+              />
+            </div>
+          </div>
 
-            {/* Main Content */}
-            <main className="flex-1 flex flex-col items-center justify-between p-4 md:p-8">
-                {/* Header */}
-                <header className="flex w-full max-w-5xl justify-between items-center py-4 relative">
-                <div className="flex items-center space-x-2">
-                    {/* 햄버거 버튼 (사이드바 닫힌 경우에만 표시) */}
-                    {!isSidebarOpen && (
-                    <button
-                        onClick={() => setIsSidebarOpen(true)}
-                        // 햄버거 버튼 위치 조정(왼쪽 끝)
-                        className="text-gray-600 hover:text-black"
-                    >
-                        <Bars3Icon className="w-6 h-6" />
-                    </button>
-                    )}
-                    {/* 로고 위치 조정(가운데 정렬) */}
-                    <div className="absolute left-1/2 transform -translate-x-1/2 text-xl md:text-2xl font-bold">LOGO</div>
+          {/* 상담 기록 */}
+          <div className="mt-8 flex-1 overflow-y-auto text-gray-600 text-sm space-y-2">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <div
+                key={n}
+                className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-100 cursor-pointer transition"
+              >
+                <div className="truncate">
+                  <p className="text-gray-800 font-medium">재산분할 사건 {n}</p>
+                  <p className="text-xs text-gray-500">피해자 신분 • 계약법 • 상법</p>
                 </div>
+              </div>
+            ))}
+          </div>
 
-                <div className="flex space-x-2 relative">
-                    <button className="py-2 px-3 md:px-4 border border-gray-300 rounded-full text-xs md:text-sm">로그인</button>
-                    <div className="relative group">
-                    <button className="py-2 px-3 md:px-4 border border-gray-300 rounded-full text-xs md:text-sm">회원가입</button>
-                    <div className="absolute top-full mt-2 right-0 py-1 px-3 bg-gray-200 rounded-full text-xs font-semibold whitespace-nowrap hidden group-hover:block z-10">
-                        회원가입 시 상담 10회로 가능!
-                    </div>
-                    </div>
-                </div>
-                </header>
-                
-                
+          {/* 사용자 정보 */}
+          <div className="border-t pt-3 mt-2 text-center text-sm text-gray-600">
+            <div className="flex items-center justify-center space-x-2">
+              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">
+                👤
+              </div>
+              <span>사용자 님</span>
+            </div>
+          </div>
+        </aside>
+      )}
 
-                {/* Main Section */}
-                <section className="flex flex-col items-center text-center my-auto px-4">
-                    <h1 className="text-lg text-gray-500">당신의 법률비서, LOGO</h1>
-                    <h2 className="text-2xl md:text-4xl font-bold mt-2 leading-relaxed md:leading-normal">
-                        누구에게 물어볼까 망설이지 말고
-                        <br />
-                        AI 변호사에게
-                    </h2>
+      {/* Main Area */}
+      <main className="flex-1 flex flex-col items-center justify-center p-6 md:p-10">
+        {/* Header */}
+        {!isSidebarOpen && (
+            <button
+            onClick={() => setIsSidebarOpen(true)}
+            className="absolute top-6 left-6 text-gray-600 hover:text-black transition"
+            aria-label="사이드바 열기"
+            >
+            <Bars3Icon className="w-7 h-7 md:w-8 md:h-8" />
+            </button>
+        )}
 
-                    <div className="relative w-full max-w-2xl mt-8">
-                        <form onSubmit={handleSubmit}>
-                            {/* 사이드바 상태에 따라 안내문 다르게 표시 */}
-                            {isSidebarOpen ? (
-                                // 사이드바 열린 상태
-                                <input
-                                    type="text"
-                                    placeholder="무슨 일이든 편하게 물어보세요!"
-                                    value={inputValue}
-                                    onChange={(e) => setInputValue(e.target.value)}
-                                    className="w-full py-3 px-6 pr-12 rounded-full border border-gray-300 shadow-md focus:outline-none text-sm md:text-base"
-                                />
-                            ) : (
-                                // 사이드바 닫힌 상태
-                                <div className="w-full border rounded-2xl shadow-md bg-white text-left text-sm leading-relaxed max-h-50 overflow-y-auto px-6 py-4">
-                                    <p>1 무슨 일이든 편하게 물어보세요!</p>
-                                    <p>2 여기는 8줄까지만</p>
-                                    <p>3 최대로</p>
-                                    <p>4 노출됩니다.</p>
-                                    <p>5 8줄 초과일 시,</p>
-                                    <p>6 스크롤이 노출됩니다</p>
-                                    <p>7 이건 첫 질문 뿐 아니라</p>
-                                    <p>8 이후 질문에도 동일하게 적용됩니다</p>
-                                </div>
-                            )}
+        {/* Main Text Section */}
+        <section className="flex flex-col items-center text-center mt-10">
+          <img src={lawkeyLogo} alt="AI 파트너" className="w-16 h-16 mb-4" />
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
+            나만의 AI 법률 파트너
+          </h1>
+          <p className="text-gray-600 text-base md:text-lg mb-6 leading-relaxed">
+            혼자 고민하지 마세요.<br />
+            당신의 이야기를 듣고 가장 든든한 편이 되어 드릴게요.
+          </p>
 
-                            {/* 전송 버튼 */}
-                            <Link 
-                            to="/counseling"
-                            state={{ initialMessage: inputValue }} // 입력값을 상담 페이지로 전달
-                            >
-                            <button className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500">
-                                <ArrowRightCircleIcon className="h-5 w-5 md:h-6 md:w-6" />
-                            </button>
-                            </Link>
-                        </form>
-                    </div>
-                </section>
+          {/* Prompt Box */}
+          <div className="relative w-full max-w-3xl">
+            <form onSubmit={handleSubmit}>
+              <textarea
+                placeholder="무슨 일이든 편하게 물어보세요!"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                rows={2}
+                className="w-full py-3 px-6 pr-12 rounded-2xl border border-gray-300 shadow-md bg-white/70 backdrop-blur-sm focus:outline-none text-sm md:text-base resize-none"
+              />
+              <button
+                type="submit"
+                className="absolute right-4 bottom-3 text-gray-500 hover:text-green-600 transition"
+              >
+                <img src={enterOn} className="h-6 w-6" />
+              </button>
+            </form>
+          </div>
 
-                {/* Footer */}
-                <footer className="text-center text-xs text-gray-500 mt-auto pt-4 hidden md:block">
-                AI가 제공하는 정보는 법적 효력을 갖지 않으며, 전문적인 법률 자문을 대체하지 않습니다.
-                </footer>
-            </main>
-        </div>
-    );
+          {/* Footer 바로 아래 배치 */}
+          <footer className="text-center text-xs text-gray-500 mt-4">
+            * AI가 제공하는 정보는 법적 효력을 갖지 않으며, 전문적인 법률 자문을 대체하지 않습니다.
+          </footer>
+        </section>
+      </main>
+    </div>
+  );
 }
 
 export default MainPage;
