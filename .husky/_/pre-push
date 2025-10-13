@@ -1,11 +1,2 @@
 #!/usr/bin/env sh
-. "$(dirname "$0")/husky.sh"
-
-branch="$(git symbolic-ref --short HEAD)"
-if [ "$branch" = "main" ]; then
-  echo "🚫 Don't push directly to main"
-  echo "Please create a pull request instead"
-  exit 1
-fi
-
-npx lint-staged
+. "$(dirname "$0")/h"
