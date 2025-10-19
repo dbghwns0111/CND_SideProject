@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   MagnifyingGlassIcon,
+  ChatBubbleLeftEllipsisIcon,
   XMarkIcon,
   PencilIcon,
   TrashIcon,
@@ -12,7 +13,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { ArrowUpIcon } from "@heroicons/react/24/solid";
 // lawkeyLogo를 "../components/icons"에서 가져오는 것으로 가정합니다.
-import { lawkeyLogo } from "../components/icons"; 
+import { lawkeyLogo, enterOff, enterOn} from "../components/icons"; 
 
 function MainPage({ chatRooms = [], handleAddChatRoom, handleDeleteChatRoom }) {
   // ✅ 기본값: 열린 상태
@@ -31,6 +32,12 @@ function MainPage({ chatRooms = [], handleAddChatRoom, handleDeleteChatRoom }) {
   // 메인 영역 마진 (사이드바 폭에 맞춤)
   const mainMarginOpen = "ml-72";   
   const mainMarginClosed = "ml-16"; 
+
+  // 마우스 오버 상태 
+  const [isHovered, setIsHovered] = useState(false); 
+
+  // 사이드바가 완전히 열린 상태 정의 (클릭으로 열려있거나, 마우스 오버 중이거나)
+  const isSidebarFullyOpen = isSidebarOpen || isHovered;
 
   const onToggleClose = (e) => {
     e.stopPropagation();
@@ -55,8 +62,20 @@ function MainPage({ chatRooms = [], handleAddChatRoom, handleDeleteChatRoom }) {
     setInputValue("");
   };
 
+  const handleKeyDown = (e) => {
+    // 1. 엔터 키(keyCode 13)가 눌렸을 때
+    if (e.key === 'Enter') {
+        // 2. Ctrl 키가 함께 눌리지 않았다면: 전송 처리
+        if (!e.shiftKey) {
+            e.preventDefault(); // 기본 줄바꿈 동작 방지
+            handleSubmit(e); // 폼 제출 함수 호출
+        }
+        // 3. Ctrl 키가 함께 눌렸다면: 줄바꿈 동작 허용 (기본 동작 유지)
+    }
+  };
+
   return (
-    <div className="relative w-full min-h-screen bg-gradient-to-br from-green-50 to-yellow-50">
+    <div className="relative w-full min-h-screen bg-gradient-to-b from-white to-green-50">
       {/* =========================
           ⬅️ 팝업 사이드바
       ========================== */}
@@ -67,7 +86,7 @@ function MainPage({ chatRooms = [], handleAddChatRoom, handleDeleteChatRoom }) {
           absolute z-40 ${fixedTop} ${fixedBottom} left-[10px] 
           
           // 스타일 및 레이아웃
-          bg-white/80 backdrop-blur-md border border-gray-200 rounded-xl shadow-xl
+          bg-white/10 backdrop-blur-md border border-gray-200 rounded-xl shadow-xl
           transition-all duration-300 ease-in-out
           flex flex-col
           
@@ -77,7 +96,10 @@ function MainPage({ chatRooms = [], handleAddChatRoom, handleDeleteChatRoom }) {
       >
         {/* 상단 헤더 */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 flex-shrink-0">
-          <div className="flex items-center space-x-2 text-green-700 font-semibold">
+          <div 
+            className="flex items-center space-x-2 text-green-700 font-semibold cursor-pointer"
+            onClick={() => window.location.reload()}
+          >
             <img src={lawkeyLogo} alt="lawkey" className="w-7 h-7" />
             {isSidebarOpen && <span className="text-lg">lawkey</span>}
           </div>
@@ -107,7 +129,9 @@ function MainPage({ chatRooms = [], handleAddChatRoom, handleDeleteChatRoom }) {
                 : "p-3 bg-green-100 hover:bg-green-200 rounded-xl flex justify-center"
             }`}
           >
-            <PencilIcon className="w-5 h-5 text-green-800" />
+            <div className="flex-shrink-0">
+              <PencilIcon className="w-5 h-5 text-green-800" />
+            </div>
             {isSidebarOpen && <span>새 상담 시작</span>}
           </button>
 
@@ -132,7 +156,7 @@ function MainPage({ chatRooms = [], handleAddChatRoom, handleDeleteChatRoom }) {
           {isSidebarOpen ? (
             <>
               <div className="text-sm font-medium text-gray-600 mb-2">
-                상담 기록 {chatRooms.length}건
+                상담 기록 <span className="text-green-600">{chatRooms.length}</span>건
               </div>
               {chatRooms.map((room) => (
                 <div
@@ -171,10 +195,11 @@ function MainPage({ chatRooms = [], handleAddChatRoom, handleDeleteChatRoom }) {
           ) : (
             // 미니 상태: 아이콘만 세로 나열
             <div className="flex flex-col items-center space-y-5 mt-6 text-gray-500">
-              <Bars3Icon className="w-5 h-5" /> {/* 아이콘 크기 조정 */}
-              <PencilIcon className="w-5 h-5" /> {/* 아이콘 크기 조정 */}
-              <MagnifyingGlassIcon className="w-5 h-5" /> {/* 아이콘 크기 조정 */}
-              <span className="text-xs text-gray-400">1/{chatRooms.length || 0}</span>
+              <ChatBubbleLeftEllipsisIcon className="w-5 h-5" /> {/* 아이콘 크기 조정 */}
+              <span className="text-sm font-medium text-gray-600 mb-2">
+                <span className="text-green-600">{chatRooms.length}</span>
+                /5
+              </span>
             </div>
           )}
         </div>
@@ -226,6 +251,7 @@ function MainPage({ chatRooms = [], handleAddChatRoom, handleDeleteChatRoom }) {
                 placeholder="무슨 일이든 편하게 물어보세요!"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleKeyDown}
                 rows={2}
                 className="w-full py-3 px-6 pr-12 rounded-2xl border border-gray-300 shadow-md bg-white/70 backdrop-blur-sm focus:outline-none text-sm md:text-base resize-none"
               />
@@ -239,7 +265,11 @@ function MainPage({ chatRooms = [], handleAddChatRoom, handleDeleteChatRoom }) {
                 disabled={!inputValue.trim()}
                 aria-label="전송"
               >
-                <ArrowUpIcon className="h-6 w-6" />
+                {inputValue.trim() ? (
+                  <img src={enterOn} alt="전송" className="h-6 w-6" />
+                ) : (
+                  <img src={enterOff} alt="전송 불가" className="h-6 w-6" />
+                )}
               </button>
             </form>
           </div>

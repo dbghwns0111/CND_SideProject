@@ -409,7 +409,8 @@ function CounselingPage({ chatRooms = [], handleDeleteChatRoom, chatMessages, up
         {/* Input Box */}
         <footer
           className={`
-            fixed bottom-0 z-30 p-4
+            fixed bottom-0 z-30
+            p-4 border-t border-gray-200 
             transition-all duration-300
             left-0 right-0 
             flex flex-col items-center
@@ -425,7 +426,7 @@ function CounselingPage({ chatRooms = [], handleDeleteChatRoom, chatMessages, up
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    className="bg-white/10 flex-grow py-3 px-6 rounded-2xl border border-gray-300 shadow-md focus:outline-none pr-12 text-sm resize-none" 
+                    className="flex-grow py-3 px-6 rounded-2xl border border-gray-300 shadow-md focus:outline-none pr-12 text-sm resize-none" 
                 />
                 <button 
                     type="submit" 
