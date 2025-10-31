@@ -122,14 +122,14 @@ function SideNavigation({ isSidebarOpen, setIsSidebarOpen }) {
                   />
                 </div>
 
-                <div className="flex flex-col mt-auto border-t border-gray-200 pt-[1rem] gap-[0.5rem]">
+                <div className="flex flex-col border-t border-gray-200 pt-[1rem] gap-[0.5rem] min-h-[5.5rem]">
                   {isLoggedIn ? (
                     <button className="flex items-center gap-[0.75rem]" onClick={handleLogout}>
                       <HiUserCircle size="2.625rem" color="#29CC8B" />
                       <span className="font-bold text-gray-700">{user?.name} 님</span>
                     </button>
                   ) : (
-                    <div className="flex flex-row justify-between gap-[2.5rem]">
+                    <div className="flex flex-row justify-between gap-[2.5rem] mt-auto">
                       <button
                         onClick={handleLogin}
                         className="px-[1rem] py-[0.5rem] rounded-full bg-white w-[8rem]"

@@ -4,6 +4,7 @@ import SideNavigation from '../components/SideNavigation';
 import ChatInput from '../components/ChatInput';
 import ChatArea from '../components/ChatArea';
 import { useChatApi } from '../hooks/useChatApi';
+import EyeIcon from '../assets/Eyeicon';
 
 function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -98,12 +99,14 @@ function Home() {
       >
         <section className="w-full flex flex-col my-auto">
           {!sessionId && !loadingFade && (
-            <div className="px-4 relative w-3/5 max-w-6xl mx-auto">
-              <div className="px-4 relative w-full md:w-3/5 max-w-6xl mx-auto">
-                <img src="/logo_icon.svg" alt="logoIcon" className="w-16 md:w-24 mb-8" />
+            <div className="px-4 relative w-3/5 max-w-6xl mx-auto items-center text-center">
+              <div className="px-4 relative w-full max-w-6xl mx-auto flex flex-col items-center text-center">
+                {/* 아이콘 */}
+                <EyeIcon className="w-10 h-10 mb-2" />
                 <h1 className="text-lg md:text-xl font-bold mt-2 leading-relaxed mb-4">
                   나만의 AI 법률 파트너
                 </h1>
+
                 <span className="text-base md:text-xl text-center">
                   혼자 고민하지 마세요.<br />
                   당신의 이야기를 듣고 가장 든든한 편이 되어 드릴게요.

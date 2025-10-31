@@ -2,12 +2,13 @@ import React from 'react';
 import { HiOutlineChat } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
 
-const tagColors = [
-  '#C5D7EF', // 0
-  '#F2E3C2', // 1
-  '#C2E9E3', // 2
-  '#F3D5D6', // 3
-];
+const tagColors = {
+  '피해자 신분': '#C5D7EF',
+  '계약법': '#F2E3C2',
+  '상법': '#C2E9E3',
+  '형법': '#F3D5D6',
+};
+const defaultTagColor = '#E5E7EB'; // gray-200
 
 /**
  * CounselingList 컴포넌트
@@ -51,8 +52,8 @@ function CounselingList({ data = [], selectedId = 1 }) {
                   key={tag}
                   className="px-2 py-0.5 text-xs rounded-full font-bold border"
                   style={{
-                    backgroundColor: tagColors[idx % tagColors.length],
-                    borderColor: tagColors[idx % tagColors.length],
+                    backgroundColor: tagColors[tag] || defaultTagColor,
+                    borderColor: tagColors[tag] || defaultTagColor,
                     color: isSelected ? '#222' : '#999',
                   }}
                 >
