@@ -1,0 +1,254 @@
+diff --git a/.env b/.env
+new file mode 100644
+index 0000000..d74b1e6
+--- /dev/null
++++ b/.env
+@@ -0,0 +1,2 @@
++VITE_API_BASE_URL=https://java-app-khekunybtq-du.a.run.app
++VITE_API_KEY=your_api_key_here
+\ No newline at end of file
+diff --git a/src/api/chatApi.js b/src/api/chatApi.js
+new file mode 100644
+index 0000000..b6b4b40
+--- /dev/null
++++ b/src/api/chatApi.js
+@@ -0,0 +1,45 @@
++
++import { API_BASE_URL, API_KEY } from './config';
++
++async function requestApi(endpoint, body) {
++  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
++    method: 'POST',
++    headers: {
++      'Content-Type': 'application/json',
++      'Authorization': `Bearer ${API_KEY}`,
++    },
++    body: JSON.stringify(body)
++  });
++  if (!response.ok) throw new Error('API 호출 실패');
++  return await response.json();
++}
++
++// Step 1: 대화 시작
++export function sendStep1Message(message) {
++  return requestApi('/chat/step1', { message });
++}
++
++// Step 2: 사건 세부 유형 선택
++export function sendStep2Message(sessionId, selectedOptions) {
++  return requestApi('/chat/step2', { sessionId, selectedOptions });
++}
++
++// Step 3: 피해 수위 선택
++export function sendStep3Message(sessionId, selectedSeverity) {
++  return requestApi('/chat/step3', { sessionId, selectedSeverity });
++}
++
++// Step 4: 상세 설명 입력
++export function sendStep4Message(sessionId, detail) {
++  return requestApi('/chat/step4', { sessionId, detail });
++}
++
++// Step 5: 대처 방안 선택
++export function sendStep5Message(sessionId, selectedOption) {
++  return requestApi('/chat/step5', { sessionId, selectedOption });
++}
++
++// 자유 질문
++export function sendFreeQuestion(sessionId, question) {
++  return requestApi('/chat/free', { sessionId, question });
++}
+diff --git a/src/api/config.js b/src/api/config.js
+new file mode 100644
+index 0000000..a2aa42a
+--- /dev/null
++++ b/src/api/config.js
+@@ -0,0 +1,2 @@
++export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
++export const API_KEY = import.meta.env.VITE_API_KEY;
+diff --git a/src/hooks/useChatApi.js b/src/hooks/useChatApi.js
+new file mode 100644
+index 0000000..55a88a4
+--- /dev/null
++++ b/src/hooks/useChatApi.js
+@@ -0,0 +1,116 @@
++import { useState } from 'react';
++import {
++  sendStep1Message,
++  sendStep2Message,
++  sendStep3Message,
++  sendStep4Message,
++  sendStep5Message,
++  sendFreeQuestion
++} from '../api/chatApi';
++
++export function useChatApi() {
++  const [loading, setLoading] = useState(false);
++  const [error, setError] = useState(null);
++
++  // Step 1
++  const sendStep1 = async (msg) => {
++    setLoading(true);
++    setError(null);
++    try {
++      const res = await sendStep1Message(msg);
++      console.log('res', res);
++      setLoading(false);
++      return res;
++    } catch (err) {
++      setError(err);
++      setLoading(false);
++      return null;
++    }
++  };
++
++  // Step 2
++  const sendStep2 = async (sessionId, selectedOptions) => {
++    setLoading(true);
++    setError(null);
++    try {
++      const res = await sendStep2Message(sessionId, selectedOptions);
++      setLoading(false);
++      return res;
++    } catch (err) {
++      setError(err);
++      setLoading(false);
++      return null;
++    }
++  };
++
++  // Step 3
++  const sendStep3 = async (sessionId, selectedSeverity) => {
++    setLoading(true);
++    setError(null);
++    try {
++      const res = await sendStep3Message(sessionId, selectedSeverity);
++      setLoading(false);
++      return res;
++    } catch (err) {
++      setError(err);
++      setLoading(false);
++      return null;
++    }
++  };
++
++  // Step 4
++  const sendStep4 = async (sessionId, detail) => {
++    setLoading(true);
++    setError(null);
++    try {
++      const res = await sendStep4Message(sessionId, detail);
++      setLoading(false);
++      return res;
++    } catch (err) {
++      setError(err);
++      setLoading(false);
++      return null;
++    }
++  };
++
++  // Step 5
++  const sendStep5 = async (sessionId, selectedOption) => {
++    setLoading(true);
++    setError(null);
++    try {
++      const res = await sendStep5Message(sessionId, selectedOption);
++      setLoading(false);
++      return res;
++    } catch (err) {
++      setError(err);
++      setLoading(false);
++      return null;
++    }
++  };
++
++  // 자유 질문
++  const sendFree = async (sessionId, question) => {
++    setLoading(true);
++    setError(null);
++    try {
++      const res = await sendFreeQuestion(sessionId, question);
++      setLoading(false);
++      return res;
++    } catch (err) {
++      setError(err);
++      setLoading(false);
++      return null;
++    }
++  };
++
++  return {
++    sendStep1,
++    sendStep2,
++    sendStep3,
++    sendStep4,
++    sendStep5,
++    sendFree,
++    loading,
++    error
++  };
++}
+diff --git a/src/pages/CounselingPage.jsx b/src/pages/CounselingPage.jsx
+index 56c1806..0dff789 100644
+--- a/src/pages/CounselingPage.jsx
++++ b/src/pages/CounselingPage.jsx
+@@ -1,5 +1,6 @@
+ // src/pages/CounselingPage.jsx
+ import React, { useState, useEffect, useRef } from "react";
++import { useChatApi } from "../hooks/useChatApi";
+ import { useLocation, useParams, useNavigate } from "react-router-dom";
+ import {
+   Bars3Icon,
+@@ -15,6 +16,7 @@ import { lawkeyLogo } from "../components/icons";
+ const STORAGE_KEY = "chatMessages"; // ✅ 로컬스토리지 키
+ 
+ function CounselingPage({ chatRooms = [], handleDeleteChatRoom, chatMessages, updateChatMessages }) {
++  const { sendStep1, loading: apiLoading, error: apiError } = useChatApi();
+   const location = useLocation();
+   const navigate = useNavigate();
+   const { chatRoomId } = useParams();
+@@ -175,7 +177,43 @@ function CounselingPage({ chatRooms = [], handleDeleteChatRoom, chatMessages, up
+     saveToStorage(currentChatId, next); // ✅ 저장
+ 
+     setInputMessage("");
+-    getBotResponse();
++    setIsBotTyping(true);
++    console.log("Sending message to API:", text);
++    sendStep1(text)
++      .then((data) => {
++        setIsBotTyping(false);
++        if (!data || apiError) {
++          const errorMsg = {
++            sender: "bot",
++            text: apiError ? `에러: ${apiError.message}` : "서버와 연결에 실패했습니다. 잠시 후 다시 시도해 주세요.",
++            time: new Date().toLocaleTimeString("ko-KR", {
++              hour: "2-digit",
++              minute: "2-digit",
++              hour12: false,
++            }),
++            createdAt: Date.now(),
++          };
++          const nextMsgs = [...next, errorMsg];
++          updateChatMessages(currentChatId, nextMsgs);
++          saveToStorage(currentChatId, nextMsgs);
++          return;
++        }
++        const botMsg = {
++          sender: "bot",
++          text: data.message,
++          time: new Date().toLocaleTimeString("ko-KR", {
++            hour: "2-digit",
++            minute: "2-digit",
++            hour12: false,
++          }),
++          createdAt: Date.now(),
++          options: data.options,
++          sessionId: data.sessionId,
++        };
++        const nextMsgs = [...next, botMsg];
++        updateChatMessages(currentChatId, nextMsgs);
++        saveToStorage(currentChatId, nextMsgs);
++      });
+   };
+ 
+   return (

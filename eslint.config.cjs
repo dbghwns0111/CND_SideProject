@@ -12,7 +12,7 @@ module.exports = [
         ecmaFeatures: {
           jsx: true,
         },
-        ecmaVersion: 2015,
+        ecmaVersion: 2020,
         babelOptions: {
           presets: ["@babel/preset-react"],
         },
@@ -25,6 +25,8 @@ module.exports = [
       "no-undef": "off",
       "no-console": "warn",
       "no-unused-vars": "error",
+      "react/jsx-uses-vars": "warn",
+      "react/jsx-uses-react": "warn",
     },
     settings: {
       react: {
