@@ -15,7 +15,7 @@ export default defineConfig({
     proxy: {
       '/api': 'http://localhost:8080', // Spring API 프록시
     },
-    port: 3000,
+    port: 8080,
     open: true,
     historyApiFallback: true, // React Router SPA 지원
   },

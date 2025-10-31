@@ -3,11 +3,11 @@
   min-height: 100vh;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+body {
+  margin: 0;
+  min-width: 0; /* 모바일에서 강제 스크롤 방지 */
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 @media (prefers-reduced-motion: no-preference) {

@@ -34,7 +34,7 @@ h1 {
 }
 
 button {
-  padding: 0.6em 1.2em;
+  padding: 0.2em 0em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
@@ -44,9 +44,16 @@ button {
 button:hover {
   border-color: #EAEAEA;
 }
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+
+aside {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+}
+
+aside.open {
+  transform: translateX(0); /* 열림 */
 }
 
 @media (prefers-color-scheme: light) {
