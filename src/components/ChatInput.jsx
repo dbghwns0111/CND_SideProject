@@ -1,21 +1,17 @@
 import React, { useRef, useEffect } from "react";
 import { MdSend } from "react-icons/md";
+import "../styles/chat-input.css";
 
 function ChatInput({
   value = "",
   onChange = () => {},
   onSubmit = () => {},
-  placeholder = "",
+  placeholder = "무슨 일이든 편하게 물어보세요!",
   highlightPlaceholder = "",
   className = "",
   inputClassName = ""
 }) {
   const textareaRef = useRef(null);
-
-  const highlighted = placeholder.replace(
-    new RegExp(`(${highlightPlaceholder})`, "gi"),
-    '<span class="font-bold text-gray-600">$1</span>'
-  );
 
   // 자동 높이 조절
   useEffect(() => {
@@ -27,8 +23,25 @@ function ChatInput({
   }, [value]);
 
   const handleKeyDown = (e) => {
-    // Shift+Enter → 줄바꿈
-    if (e.key === "Enter" && e.shiftKey) return;
+    // Shift+Enter → 줄바꿈 (커서 위치 보존)
+      if (e.key === "Enter" && e.shiftKey) {
+      e.preventDefault();
+      const textarea = textareaRef.current;
+      if (!textarea) return;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const newValue = value.slice(0, start) + "\n" + value.slice(end);
+      // call parent onChange with synthetic event shape
+      onChange({ target: { value: newValue } });
+      // restore caret position after DOM updates
+      requestAnimationFrame(() => {
+        textarea.selectionStart = textarea.selectionEnd = start + 1;
+        // trigger resize
+        textarea.style.height = "auto";
+        textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`;
+      });
+      return;
+    }
 
     // Enter → 전송
     if (e.key === "Enter") {
@@ -48,31 +61,21 @@ function ChatInput({
           placeholder={placeholder}
           rows={1}
           className={
-            "w-full py-4 pr-16 pl-6 rounded-full border border-gray-300 shadow-md focus:outline-none text-sm md:text-base resize-none overflow-y-auto " +
+            "chat-textarea w-full py-4 pr-24 pl-6 rounded-2xl border border-gray-300 shadow-md focus:outline-none text-sm md:text-base " +
             inputClassName
           }
-          style={{
-            maxHeight: "200px",
-            background: `
-              linear-gradient(0deg,
-                rgba(255,255,255, 0.25) 100%
-              )`,
-            backgroundSize: "400% 400%",
-            animation: "liquidMove 6s ease infinite",
-          }}
         />
-        {value === "" && (
-          <div
-            className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-sm md:text-base z-10"
-            dangerouslySetInnerHTML={{ __html: highlighted }}
-          />
-        )}
+        {/* styles are moved to src/styles/chat-input.css */}
         <button
           type="submit"
           className="absolute right-3 bottom-3 bg-black text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-gray-800 transition z-20"
           disabled={!value || value.trim() === ""}
         >
-          <MdSend size={28} />
+          {(!value || value.trim() === "") ? (
+            <img src="/enter_off.svg" alt="enter off" className="w-6 h-6" />
+          ) : (
+            <img src="/enter_on.svg" alt="enter on" className="w-6 h-6" />
+          )}
         </button>
       </div>
     </form>

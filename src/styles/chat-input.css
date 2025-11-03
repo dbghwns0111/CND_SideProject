@@ -1,0 +1,27 @@
+.chat-textarea {
+  max-height: 200px;
+  box-sizing: border-box;
+  padding-right: 4.5rem; /* space for send button and scrollbar */
+  padding-bottom: 0.9rem; /* avoid underlapping the button */
+  background: linear-gradient(0deg, rgba(255,255,255,0.25) 100%);
+  background-size: 400% 400%;
+  animation: liquidMove 6s ease infinite;
+  overflow-y: auto;
+  resize: none;
+  scrollbar-gutter: stable;
+}
+
+/* keyframe used in the component */
+@keyframes liquidMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Remove gray track background in WebKit browsers */
+.chat-textarea::-webkit-scrollbar { width: 10px; }
+.chat-textarea::-webkit-scrollbar-track { background: transparent; }
+.chat-textarea::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.35); border-radius: 8px; }
+
+/* Firefox */
+.chat-textarea { scrollbar-color: rgba(0,0,0,0.35) transparent; }

@@ -1,3 +1,4 @@
+// src/components/alter/WarningAlert.jsx
 import React, { useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 

@@ -4,9 +4,7 @@ import { useChatApi } from '../hooks/useChatApi'; // ✅ 추가
 
 function ChatArea({ sessionId }) {
   const [inputValue, setInputValue] = useState('');
-  const [messages, setMessages] = useState([
-    { sender: 'ai', text: '안녕하세요! 어떤 법률 상담이 필요하신가요?' }
-  ]);
+  const [messages, setMessages] = useState([]);
 
   const { sendStep1, loading, error } = useChatApi(); // ✅ Hook 연결
 
@@ -44,16 +42,17 @@ function ChatArea({ sessionId }) {
         <div className="flex-1 overflow-y-auto p-4 flex flex-col space-y-4">
           {messages.map((msg, idx) => (
             msg.sender === 'user' ? (
-              <div key={idx} className="self-end bg-blue-500 text-white px-4 py-2 rounded-2xl rounded-br-none max-w-xs break-words">
+              <div key={idx} className="self-end bg-[#E6F8EE] text-gray-900 px-4 py-2 rounded-2xl rounded-br-none max-w-xs break-words">
                 {msg.text}
               </div>
             ) : (
-              <div key={idx} className="flex items-start space-x-2 self-start">
-                <div className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full text-xs font-bold">
-                  LOGO
+              <div key={idx} className="flex items-start space-x-3 self-start">
+                <div className="flex items-center justify-center w-8 h-8 bg-transparent overflow-hidden">
+                  <img src="/logo_icon.svg" alt="lawkey" className="w-full h-full object-cover" />
                 </div>
-                <div className="bg-gray-200 px-4 py-2 rounded-2xl rounded-tl-none max-w-xs break-words">
-                  {msg.text}
+                <div className="max-w-prose break-words text-gray-800 leading-relaxed">
+                  <div className="text-sm font-semibold text-gray-800 mb-2">로키</div>
+                  <div>{msg.text}</div>
                 </div>
               </div>
             )
