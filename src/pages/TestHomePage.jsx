@@ -2,16 +2,14 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ChatInput from '../components/ChatInput';
 import LoadingState from '../components/LoadingState';
-import { useChatApi } from '../hooks/useChatApi';
 import { useChatRooms } from '../store/ChatRoomsContext';
 
-function HomePage() {
+function TestHomePage() {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [loadingFade, setLoadingFade] = useState(false);
 
   const navigate = useNavigate();
-  const { sendStep1 } = useChatApi();
   const { chatRooms, addChatRoom } = useChatRooms();
 
   const handleMessageSubmit = async (e) => {
@@ -19,28 +17,25 @@ function HomePage() {
     const text = inputValue.trim();
     if (!text) return;
 
-    // Prevent creating more than 5 chat rooms
-    if (chatRooms.length >= 5) {
-      alert('채팅방은 최대 5개까지만 생성할 수 있습니다. 기존 채팅방을 삭제한 후 다시 시도하세요.');
-      return;
-    }
-
+    // Simulate network delay for UX parity with real HomePage
     try {
+      if (chatRooms.length >= 5) {
+        alert('채팅방은 최대 5개까지만 생성할 수 있습니다. 기존 채팅방을 삭제한 후 다시 시도하세요.');
+        return;
+      }
+
       setIsLoading(true);
       setLoadingFade(true);
 
-      const data = await sendStep1(text);
+      await new Promise(r => setTimeout(r, 600)); // small simulated delay
 
-      if (data && data.sessionId) {
-        // add to local chatRooms list
-        addChatRoom({ id: data.sessionId, text });
-        navigate(`/c/${data.sessionId}`, { replace: true });
-      } else {
-        throw new Error('세션 정보 또는 메시지를 받지 못했습니다. 서버 응답을 확인하세요.');
-      }
+      // create fake session id and add locally
+      const sessionId = Math.random().toString(36).substring(2, 10);
+      addChatRoom({ id: sessionId, text });
+      navigate(`/c/${sessionId}`, { replace: true });
     } catch (error) {
-      console.error('API 호출 중 에러 발생:', error);
-      alert(`메시지 전송 실패: ${error.message}`);
+      console.error('테스트 생성 중 에러:', error);
+      alert(`테스트 채팅방 생성 실패: ${error.message}`);
     } finally {
       setIsLoading(false);
       setLoadingFade(false);
@@ -57,11 +52,9 @@ function HomePage() {
       {!isLoading && (
         <div className="flex flex-col items-center w-full max-w-4xl pt-16 pb-24">
           <img src="/logo_icon.svg" alt="lawkey" className="w-16 h-16 mb-4" />
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3 text-center">나만의 AI 법률 파트너</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3 text-center">테스트용 AI 법률 파트너 (로컬)</h1>
           <p className="text-gray-600 text-base md:text-lg mb-6 leading-relaxed text-center">
-            혼자 고민하지 마세요.
-            <br />
-            당신의 이야기를 듣고 가장 든든한 편이 되어 드릴게요.
+            이 페이지는 백엔드와 연결하지 않고 로컬에서 채팅방 생성 과정을 테스트합니다.
           </p>
 
           <div className="relative w-full max-w-2xl">
@@ -69,11 +62,12 @@ function HomePage() {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onSubmit={handleMessageSubmit}
+              placeholder="테스트용 메시지를 입력하세요"
             />
           </div>
 
           <footer className="text-center text-xs text-gray-500 mt-4">
-            * AI가 제공하는 정보는 법적 효력을 갖지 않으며, 전문적인 법률 자문을 대체하지 않습니다.
+            * 이 페이지는 개발용 테스트 페이지입니다. 배포 시 제거하세요.
           </footer>
         </div>
       )}
@@ -81,4 +75,4 @@ function HomePage() {
   );
 }
 
-export default HomePage;
+export default TestHomePage;

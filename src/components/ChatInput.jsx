@@ -52,7 +52,8 @@ function ChatInput({
 
   return (
     <form onSubmit={onSubmit} className={`relative w-full ${className}`}>
-      <div className="relative w-full">
+      <div className="relative w-full flex justify-center">
+        <div className="chat-input-wrapper relative w-full">
         <textarea
           ref={textareaRef}
           value={value}
@@ -77,6 +78,7 @@ function ChatInput({
             <img src="/enter_on.svg" alt="enter on" className="w-6 h-6" />
           )}
         </button>
+        </div>
       </div>
     </form>
   );

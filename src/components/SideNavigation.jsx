@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BsSquareHalf } from "react-icons/bs";
 import { HiOutlineDocumentAdd, HiSearch, HiOutlineChat, HiUserCircle, HiOutlineTrash } from "react-icons/hi";
@@ -6,18 +6,22 @@ import { CgLogOut } from "react-icons/cg";
 import Search from './Search';
 import CounselingList from './CounselingList';
 import WarningAlert from './alter/WarningAlert';
+import { useChatRooms } from '../store/ChatRoomsContext';
 import { useAuth } from '../store/hooks/useAuth';
 
 function SideNavigation({ isSidebarOpen, setIsSidebarOpen }) {
  const { isLoggedIn, user, login, logout } = useAuth();
 
  const [showContent, setShowContent] = useState(isSidebarOpen);
+ // detect large viewport (1920px width or wider) so we can set sidebar width to 300px
+ const [isLargeViewport, setIsLargeViewport] = useState(() => typeof window !== 'undefined' ? window.innerWidth >= 1920 : false);
  const [maxCounselingCount, setMaxCounselingCount] = useState(5);
- const [counselingCount, setCounselingCount] = useState(4);
+ const { chatRooms, removeChatRoom, clearChatRooms } = useChatRooms();
+ const [counselingCount, setCounselingCount] = useState(chatRooms.length);
  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
  const handleDelete = () => {
-  setCounselingCount(0);
+  clearChatRooms();
   setIsAlertOpen(false);
  };
 
@@ -38,6 +42,20 @@ function SideNavigation({ isSidebarOpen, setIsSidebarOpen }) {
   }
  }, [isSidebarOpen]);
 
+ // update isLargeViewport on resize
+ useEffect(() => {
+  const handleResize = () => setIsLargeViewport(window.innerWidth >= 1920);
+  window.addEventListener('resize', handleResize);
+  // ensure initial value is correct
+  handleResize();
+  return () => window.removeEventListener('resize', handleResize);
+ }, []);
+
+// keep counter in sync with context
+useEffect(() => {
+  setCounselingCount(chatRooms.length);
+}, [chatRooms]);
+
  const handleSavePDF = () => {};
  const handleLogin = () => {
   login({ name: '홍길동', email: 'hong@example.com' });
@@ -48,29 +66,18 @@ function SideNavigation({ isSidebarOpen, setIsSidebarOpen }) {
   setIsSidebarOpen(true);
  };
 
-  // 사이드바 영역 아무 곳 클릭 시 열기 (복사본에서 가져온 기능)
+  // 사이드바 영역 아무 곳 클릭 시 열기
   const onSidebarClick = () => {
     if (!isSidebarOpen) setIsSidebarOpen(true);
   };
 
-  // 사이드바 외부 클릭 시 사이드바 닫기
-  const asideRef = useRef(null);
-  useEffect(() => {
-    function handleOutsideClick(e) {
-      if (isSidebarOpen && asideRef.current && !asideRef.current.contains(e.target)) {
-        setIsSidebarOpen(false);
-      }
-    }
+  // 외부 클릭으로 사이드바를 닫는 기능 제거: 사이드바는 닫기 버튼으로만 닫히도록 유지합니다.
 
-    document.addEventListener('mousedown', handleOutsideClick);
-    return () => document.removeEventListener('mousedown', handleOutsideClick);
-  }, [isSidebarOpen, setIsSidebarOpen]);
-
- const sidebarWidth = isSidebarOpen ? '16rem' : '4rem';
+ // If viewport is >=1920px and sidebar is open, use 300px width per request; otherwise fall back to 16rem
+ const sidebarWidth = isSidebarOpen ? (isLargeViewport ? '300px' : '16rem') : '4rem';
 
   return (
     <aside
-      ref={asideRef}
       onClick={onSidebarClick}
       className="flex flex-col h-[calc(100vh-4rem)] shadow-2xl rounded-2xl border border-gray-100 fixed z-30 bg-white/80"
    style={{
@@ -110,15 +117,17 @@ function SideNavigation({ isSidebarOpen, setIsSidebarOpen }) {
      {showContent && (
       <div className="flex flex-col flex-1 p-[1rem]">
        {/* 새 상담 + 검색 */}
-       <div className="flex flex-col mt-[1.5rem] mb-[2rem]">
+       <div className="flex flex-col mt-[1rem] mb-[1rem]">
         <button
-         className="flex items-center mb-[0.5rem] hover:bg-gray-200 transition"
+         className="flex items-center mb-[1rem] hover:bg-gray-200 transition"
          onClick={handleNewCounseling}
         >
          <HiOutlineDocumentAdd size="2.25rem" className="mr-[0.5rem]" />
          <span className="font-bold text-[0.875rem]">새 상담 시작</span>
         </button>
-        <Search placeholder="상담내역 검색" />
+        <div className="flex items-center mb-[1rem]">
+          <Search placeholder="상담내역 검색" />
+        </div>
        </div>
 
        {/* 상담 기록 영역 */}
@@ -141,15 +150,12 @@ function SideNavigation({ isSidebarOpen, setIsSidebarOpen }) {
          </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
-         <CounselingList
-          data={[
-           { id: 1, text: '계약서 작성 중 분쟁 발생, 어떻게 해야 하나요?', tags: ['피해자 신분', '계약법', '상법', '형법'] },
-           { id: 2, text: '상가 임대차 계약 해지 관련 문의', tags: ['계약법', '상법'] },
-           { id: 3, text: '형사 사건 피해자 진술서 작성법', tags: ['피해자 신분', '형법'] },
-          ]}
-         />
-        </div>
+  <div className="flex-1 overflow-y-auto">
+   <CounselingList
+    data={chatRooms}
+    onDelete={removeChatRoom}
+   />
+  </div>
 
         <div className="flex flex-col border-t border-gray-200 pt-[1rem] gap-[0.5rem] min-h-[5.5rem]">
          {isLoggedIn ? (
@@ -158,16 +164,29 @@ function SideNavigation({ isSidebarOpen, setIsSidebarOpen }) {
            <span className="font-bold text-gray-700">{user?.name} 님</span>
           </button>
          ) : (
-          <div className="flex flex-row justify-between gap-[2.5rem] mt-auto">
-           <button
-            onClick={handleLogin}
-            className="px-[1rem] py-[0.5rem] rounded-full bg-white w-[8rem]"
-           >
-            <span className="text-gray-900 text-[0.875rem] font-bold">로그인</span>
-           </button>
-           <button className="px-[1rem] py-[0.5rem] rounded-full bg-[#29CC8B] text-white w-[8rem]">
-            <span className="text-white text-[0.875rem] font-bold">회원가입</span>
-           </button>
+          <div className="flex flex-row justify-center mt-auto">
+           {/* 통합 버튼: 클릭 시 로그인 처리 (필요시 별도 라우트로 변경 가능) */}
+           <div className="relative group">
+            <button
+             onClick={handleLogin}
+             className="px-[1rem] py-[0.5rem] rounded-full bg-[#29CC8B] text-white w-[10rem] font-bold"
+             aria-describedby="signupTooltip"
+            >
+             <span className="text-white text-[0.875rem] font-bold">로그인 / 회원가입</span>
+            </button>
+
+            {/* 툴팁(호버/포커스 시 표시) */}
+            <div
+             id="signupTooltip"
+             role="status"
+             className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity pointer-events-none"
+            >
+             <div className="bg-gray-800 text-white text-xs rounded px-3 py-1 whitespace-nowrap shadow">
+              회원가입 시 상담 10배로 가능!
+             </div>
+             <div className="w-2 h-2 bg-gray-800 rotate-45 mt-[-6px] mx-auto" />
+            </div>
+           </div>
           </div>
          )}
         </div>
@@ -175,8 +194,9 @@ function SideNavigation({ isSidebarOpen, setIsSidebarOpen }) {
       </div>
      )}
     </>
-   ) : (
-    <div className="flex flex-col justify-between items-center h-full mt-[2.5rem]">
+  ) : (
+   // 닫혀있을 때에도 열린 상태의 상단 여백과 동일하게 맞추기 위해 padding-top을 사용
+   <div className="flex flex-col justify-between items-center h-full pt-[1rem]">
      <div className="flex flex-col items-center gap-[2rem]">
       <button onClick={() => { setIsSidebarOpen(true); navigate('/'); }}>
        <img src="/logo_icon.svg" alt="logoIcon" />
@@ -213,50 +233,23 @@ function SideNavigation({ isSidebarOpen, setIsSidebarOpen }) {
     </div>
    )}
 
-   <WarningAlert
-    isOpen={isAlertOpen}
-    onClose={() => setIsAlertOpen(false)}
-    title="상담내역을 삭제하시겠습니까?"
-    description={
-     isLoggedIn
-      ? `삭제 후에는 복구가 불가능합니다.
-   필요하신 경우, 삭제 전에 주요 상담 내역을 
-   PDF로 저장할 수 있습니다.`
-      : "삭제 후에는 복구가 불가능합니다."
-    }
-    buttons={
-     isLoggedIn
-      ? [
-        {
-         label: 'PDF 저장',
-         onClick: handleSavePDF,
-         className: 'flex-1 px-[1rem] py-[0.5rem] rounded-full bg-[#29CC8B] text-white font-bold',
-        },
-        {
-         label: '삭제',
-         onClick: handleDelete,
-         className: 'flex-1 px-[1rem] py-[0.5rem] rounded-full bg-black text-white font-extrabold',
-        },
-        {
-         label: '취소',
-         onClick: () => setIsAlertOpen(false),
-         className: 'flex-1 px-[1rem] py-[0.5rem] rounded-full border border-gray-400 font-bold',
-        },
-       ]
-      : [
-        {
-         label: '삭제',
-         onClick: handleDelete,
-         className: 'flex-1 px-[1rem] py-[0.5rem] rounded-full bg-black text-white font-extrabold ml-[2.5rem]',
-        },
-        {
-         label: '취소',
-         onClick: () => setIsAlertOpen(false),
-         className: 'flex-1 px-[1rem] py-[0.5rem] rounded-full border border-gray-400 font-bold',
-        },
-       ]
-    }
-   />
+  <WarningAlert
+   isOpen={isAlertOpen}
+   onClose={() => setIsAlertOpen(false)}
+   title="상담내역을 삭제하시겠습니까?"
+   description={
+    isLoggedIn
+    ? `삭제 후에는 복구가 불가능합니다.
+  필요하신 경우, 삭제 전에 주요 상담 내역을 
+  PDF로 저장할 수 있습니다.`
+    : "삭제 후에는 복구가 불가능합니다."
+   }
+   isLoggedIn={isLoggedIn}
+   onConfirm={handleDelete}
+   onSavePDF={handleSavePDF}
+   user={user}
+  />
+  
   </aside>
  );
 }

@@ -29,8 +29,9 @@ function ChatArea({ sessionId }) {
 
   return (
     <div className="absolute inset-0 flex justify-center pointer-events-none">
-      <div className="w-full max-w-5xl flex flex-col h-full pointer-events-auto bg-white/0">
-        <div className="p-4 text-sm text-gray-500 text-center border-b border-gray-200/20 flex-shrink-0">
+      <div className="w-full flex flex-col h-full pointer-events-auto bg-white/0">
+        <div className="chat-content-wrapper w-full flex flex-col h-full">
+          <div className="p-4 text-sm text-gray-500 text-center border-b border-gray-200/20 flex-shrink-0">
           {new Date().toLocaleDateString('ko-KR', {
             year: 'numeric',
             month: 'long',
@@ -82,6 +83,7 @@ function ChatArea({ sessionId }) {
             placeholder="무슨 일이든 편하게 물어보세요!"
             highlightPlaceholder="법률 상담"
           />
+        </div>
         </div>
       </div>
     </div>

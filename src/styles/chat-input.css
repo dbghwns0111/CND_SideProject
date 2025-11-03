@@ -25,3 +25,20 @@
 
 /* Firefox */
 .chat-textarea { scrollbar-color: rgba(0,0,0,0.35) transparent; }
+
+/* Wrapper to constrain chat input width responsively */
+.chat-input-wrapper {
+  max-width: 700px; /* at large screens (e.g. 1920px) this becomes 700px */
+  width: min(700px, calc(100vw - 64px)); /* shrink when viewport is smaller */
+  margin: 0 auto; /* center horizontally */
+}
+
+/* Chat area content wrapper (same responsive behavior as input) */
+.chat-content-wrapper {
+  max-width: 700px;
+  width: min(700px, calc(100vw - 64px));
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}

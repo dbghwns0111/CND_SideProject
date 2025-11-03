@@ -1,5 +1,5 @@
 import React from 'react';
-import { HiOutlineChat } from 'react-icons/hi';
+import { HiOutlineChat, HiOutlineTrash as TrashIcon } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
 
 const tagColors = {
@@ -15,7 +15,7 @@ const defaultTagColor = '#E5E7EB'; // gray-200
  * @param {Array} data - 상담 기록 배열 [{ id, text, tags }]
  * @param {number} selectedId - 현재 선택된 상담 ID
  */
-function CounselingList({ data = [], selectedId = 1 }) {
+function CounselingList({ data = [], selectedId = 1, onDelete }) {
   // 임시로 SelectedId 설정
   const navigate = useNavigate();
 
@@ -25,10 +25,13 @@ function CounselingList({ data = [], selectedId = 1 }) {
         const isSelected = item.id === selectedId;
 
         return (
-          <button
+          <div
             key={item.id}
-            className="flex flex-col text-left rounded-lg p-3 transition cursor-pointer bg-white hover:bg-gray-100"
+            role="button"
+            tabIndex={0}
             onClick={() => navigate(`/c/${item.id}`)}
+            onKeyPress={(e) => { if (e.key === 'Enter') navigate(`/c/${item.id}`); }}
+            className="relative flex flex-col text-left rounded-lg p-3 transition cursor-pointer bg-white hover:bg-gray-100"
           >
             {/* 아이콘 + 텍스트 */}
             <div className="flex items-center gap-2">
@@ -47,9 +50,9 @@ function CounselingList({ data = [], selectedId = 1 }) {
 
             {/* 태그 */}
             <div className="flex flex-wrap gap-2 mt-2">
-              {item.tags.map((tag, idx) => (
+              {(item.tags || []).map((tag, idx) => (
                 <span
-                  key={tag}
+                  key={tag + idx}
                   className="px-2 py-0.5 text-xs rounded-full font-bold border"
                   style={{
                     backgroundColor: tagColors[tag] || defaultTagColor,
@@ -61,7 +64,20 @@ function CounselingList({ data = [], selectedId = 1 }) {
                 </span>
               ))}
             </div>
-          </button>
+            {/* 개별 삭제 버튼 (선택적) */}
+              {onDelete && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(item.id);
+                  }}
+                  className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
+                  aria-label="채팅방 삭제"
+                >
+                  <TrashIcon className="w-4 h-4" />
+                </button>
+              )}
+          </div>
         );
       })}
     </div>
