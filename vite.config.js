@@ -8,7 +8,7 @@ export default defineConfig({
     tailwindcss(),
   ],
   build: {
-    outDir: '../backend/src/main/resources/static', // Spring 프로젝트 구조에 맞게 경로 지정
+    // outDir: '../backend/src/main/resources/static', // Spring 프로젝트 구조에 맞게 경로 지정
     emptyOutDir: true,
   },
   server: {
