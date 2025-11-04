@@ -9,7 +9,7 @@ function ChatInput({
   placeholder = "무슨 일이든 편하게 물어보세요!",
   highlightPlaceholder = "",
   className = "",
-  inputClassName = ""
+  inputClassName = "",
 }) {
   const textareaRef = useRef(null);
 
@@ -24,7 +24,7 @@ function ChatInput({
 
   const handleKeyDown = (e) => {
     // Shift+Enter → 줄바꿈 (커서 위치 보존)
-      if (e.key === "Enter" && e.shiftKey) {
+    if (e.key === "Enter" && e.shiftKey) {
       e.preventDefault();
       const textarea = textareaRef.current;
       if (!textarea) return;
@@ -54,30 +54,30 @@ function ChatInput({
     <form onSubmit={onSubmit} className={`relative w-full ${className}`}>
       <div className="relative w-full flex justify-center">
         <div className="chat-input-wrapper relative w-full">
-        <textarea
-          ref={textareaRef}
-          value={value}
-          onChange={onChange}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          rows={1}
-          className={
-            "chat-textarea w-full py-4 pr-24 pl-6 rounded-2xl border border-gray-300 shadow-md focus:outline-none text-sm md:text-base " +
-            inputClassName
-          }
-        />
-        {/* styles are moved to src/styles/chat-input.css */}
-        <button
-          type="submit"
-          className="absolute right-3 bottom-3 bg-black text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-gray-800 transition z-20"
-          disabled={!value || value.trim() === ""}
-        >
-          {(!value || value.trim() === "") ? (
-            <img src="/enter_off.svg" alt="enter off" className="w-6 h-6" />
-          ) : (
-            <img src="/enter_on.svg" alt="enter on" className="w-6 h-6" />
-          )}
-        </button>
+          <textarea
+            ref={textareaRef}
+            value={value}
+            onChange={onChange}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            rows={1}
+            className={
+              "chat-textarea w-full py-4 pr-24 pl-6 rounded-2xl border border-gray-300 shadow-md focus:outline-none text-sm md:text-base " +
+              inputClassName
+            }
+          />
+          {/* 스타일은 src/styles/chat-input.css로 이동됨 */}
+          <button
+            type="submit"
+            className="absolute right-3 bottom-3 bg-black text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-gray-800 transition z-20"
+            disabled={!value || value.trim() === ""}
+          >
+            {!value || value.trim() === "" ? (
+              <img src="/enter_off.svg" alt="enter off" className="w-6 h-6" />
+            ) : (
+              <img src="/enter_on.svg" alt="enter on" className="w-6 h-6" />
+            )}
+          </button>
         </div>
       </div>
     </form>

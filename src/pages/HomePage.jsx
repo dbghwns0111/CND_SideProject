@@ -1,18 +1,21 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import ChatInput from '../components/ChatInput';
-import LoadingState from '../components/LoadingState';
-import { useChatApi } from '../hooks/useChatApi';
-import { useChatRooms } from '../store/ChatRoomsContext';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import ChatInput from "../components/ChatInput";
+import LoadingState from "../components/LoadingState";
+import { useChatApi } from "../hooks/useChatApi";
+import { useChatRooms } from "../store/ChatRoomsContext";
+import WarningAlert from "../components/alter/WarningAlert";
 
 function HomePage() {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [loadingFade, setLoadingFade] = useState(false);
 
   const navigate = useNavigate();
   const { sendStep1 } = useChatApi();
-  const { chatRooms, addChatRoom } = useChatRooms();
+  const { chatRooms, addChatRoom, updateChatRoomId, addMessageToRoom } =
+    useChatRooms();
+  const [showMaxRoomsAlert, setShowMaxRoomsAlert] = useState(false);
 
   const handleMessageSubmit = async (e) => {
     e.preventDefault();
@@ -21,9 +24,28 @@ function HomePage() {
 
     // Prevent creating more than 5 chat rooms
     if (chatRooms.length >= 5) {
-      alert('채팅방은 최대 5개까지만 생성할 수 있습니다. 기존 채팅방을 삭제한 후 다시 시도하세요.');
+      setShowMaxRoomsAlert(true);
       return;
     }
+
+    // Always create a local chat room first so the room appears in the sidebar
+    // even if the backend call fails or is slow. Use a temporary local id.
+    const localId = `local_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+    // include the first user message in the room.messages so chat page shows it immediately
+    const added = addChatRoom({
+      id: localId,
+      text,
+      messages: [{ sender: "user", text, createdAt: Date.now() }],
+    });
+    if (added && added.success === false && added.reason === "max") {
+      alert(
+        "채팅방은 최대 5개까지만 생성할 수 있습니다. 기존 채팅방을 삭제한 후 다시 시도하세요.",
+      );
+      return;
+    }
+
+    // Navigate immediately to the new chat room (local fallback)
+    navigate(`/c/${localId}`, { replace: true });
 
     try {
       setIsLoading(true);
@@ -31,33 +53,75 @@ function HomePage() {
 
       const data = await sendStep1(text);
 
+      // If server returns a sessionId, replace the local id with server id
       if (data && data.sessionId) {
-        // add to local chatRooms list
-        addChatRoom({ id: data.sessionId, text });
-        navigate(`/c/${data.sessionId}`, { replace: true });
+        const serverId = data.sessionId;
+        if (serverId !== localId) {
+          updateChatRoomId(localId, serverId);
+          // replace the url to reflect server-side id
+          navigate(`/c/${serverId}`, { replace: true });
+        }
+
+        // If server provided the assistant's first reply, append it to the room
+        if (data.reply) {
+          addMessageToRoom(serverId, {
+            sender: "ai",
+            text: data.reply,
+            createdAt: Date.now(),
+          });
+        }
+      } else if (data && data.reply) {
+        // Server returned a reply but no sessionId: append reply to local room
+        addMessageToRoom(localId, {
+          sender: "ai",
+          text: data.reply,
+          createdAt: Date.now(),
+        });
       } else {
-        throw new Error('세션 정보 또는 메시지를 받지 못했습니다. 서버 응답을 확인하세요.');
+        // Server returned no session info and no reply; append a graceful fallback assistant reply to the local room
+        const fallback =
+          "지금 서버 연결이 원활하지 않아 임시 안내를 드립니다. 자세한 내용은 서버 연결 후 더 정확히 안내해 드릴게요.";
+        addMessageToRoom(localId, {
+          sender: "ai",
+          text: fallback,
+          createdAt: Date.now(),
+        });
+        console.warn(
+          "서버에서 세션 정보를 받지 못했습니다. 로컬 세션으로 계속 진행합니다.",
+        );
       }
     } catch (error) {
-      console.error('API 호출 중 에러 발생:', error);
-      alert(`메시지 전송 실패: ${error.message}`);
+      // If backend fails, still keep the local chat room. Append a fallback assistant reply so user sees a reply.
+      console.error("API 호출 중 에러 발생:", error);
+      const fallback =
+        "서버에 연결할 수 없어 현재는 간단한 안내만 드립니다. 서버가 복구되면 더 완전한 답변을 제공하겠습니다.";
+      addMessageToRoom(localId, {
+        sender: "ai",
+        text: fallback,
+        createdAt: Date.now(),
+      });
     } finally {
       setIsLoading(false);
       setLoadingFade(false);
-      setInputValue('');
+      setInputValue("");
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center w-full min-h-screen px-6 md:px-10">
       {isLoading && (
-        <LoadingState loadingFade={loadingFade} containerHeightClass="h-screen" />
+        <LoadingState
+          loadingFade={loadingFade}
+          containerHeightClass="h-screen"
+        />
       )}
 
       {!isLoading && (
         <div className="flex flex-col items-center w-full max-w-4xl pt-16 pb-24">
           <img src="/logo_icon.svg" alt="lawkey" className="w-16 h-16 mb-4" />
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3 text-center">나만의 AI 법률 파트너</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3 text-center">
+            나만의 AI 법률 파트너
+          </h1>
           <p className="text-gray-600 text-base md:text-lg mb-6 leading-relaxed text-center">
             혼자 고민하지 마세요.
             <br />
@@ -72,8 +136,23 @@ function HomePage() {
             />
           </div>
 
+          <WarningAlert
+            isOpen={showMaxRoomsAlert}
+            onClose={() => setShowMaxRoomsAlert(false)}
+            title="채팅방 생성 제한"
+            description={`채팅방은 최대 ${5}개까지 생성할 수 있습니다. 기존 채팅방을 삭제한 후 다시 시도하세요.`}
+            buttons={[
+              {
+                label: "확인",
+                onClick: () => setShowMaxRoomsAlert(false),
+                className: "bg-[#29CC8B] text-white",
+              },
+            ]}
+          />
+
           <footer className="text-center text-xs text-gray-500 mt-4">
-            * AI가 제공하는 정보는 법적 효력을 갖지 않으며, 전문적인 법률 자문을 대체하지 않습니다.
+            * AI가 제공하는 정보는 법적 효력을 갖지 않으며, 전문적인 법률 자문을
+            대체하지 않습니다.
           </footer>
         </div>
       )}

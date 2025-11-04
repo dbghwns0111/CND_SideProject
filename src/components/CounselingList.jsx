@@ -1,14 +1,14 @@
-import React from 'react';
-import { HiOutlineChat, HiOutlineTrash as TrashIcon } from 'react-icons/hi';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { HiOutlineChat, HiOutlineTrash as TrashIcon } from "react-icons/hi";
+import { useNavigate } from "react-router-dom";
 
 const tagColors = {
-  '피해자 신분': '#C5D7EF',
-  '계약법': '#F2E3C2',
-  '상법': '#C2E9E3',
-  '형법': '#F3D5D6',
+  "피해자 신분": "#C5D7EF",
+  계약법: "#F2E3C2",
+  상법: "#C2E9E3",
+  형법: "#F3D5D6",
 };
-const defaultTagColor = '#E5E7EB'; // gray-200
+const defaultTagColor = "#E5E7EB"; // gray-200
 
 /**
  * CounselingList 컴포넌트
@@ -21,7 +21,7 @@ function CounselingList({ data = [], selectedId = 1, onDelete }) {
 
   return (
     <div className="flex flex-col gap-2">
-      {data.map(item => {
+      {data.map((item) => {
         const isSelected = item.id === selectedId;
 
         return (
@@ -30,7 +30,9 @@ function CounselingList({ data = [], selectedId = 1, onDelete }) {
             role="button"
             tabIndex={0}
             onClick={() => navigate(`/c/${item.id}`)}
-            onKeyPress={(e) => { if (e.key === 'Enter') navigate(`/c/${item.id}`); }}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") navigate(`/c/${item.id}`);
+            }}
             className="relative flex flex-col text-left rounded-lg p-3 transition cursor-pointer bg-white hover:bg-gray-100"
           >
             {/* 아이콘 + 텍스트 */}
@@ -38,11 +40,11 @@ function CounselingList({ data = [], selectedId = 1, onDelete }) {
               <div className="flex-shrink-0">
                 <HiOutlineChat
                   size={22}
-                  className={isSelected ? 'text-gray-900' : 'text-gray-400'}
+                  className={isSelected ? "text-gray-900" : "text-gray-400"}
                 />
               </div>
               <span
-                className={`truncate text-sm font-bold ${isSelected ? 'text-gray-900' : 'text-gray-400'}`}
+                className={`truncate text-sm font-bold ${isSelected ? "text-gray-900" : "text-gray-400"}`}
               >
                 {item.text}
               </span>
@@ -57,7 +59,7 @@ function CounselingList({ data = [], selectedId = 1, onDelete }) {
                   style={{
                     backgroundColor: tagColors[tag] || defaultTagColor,
                     borderColor: tagColors[tag] || defaultTagColor,
-                    color: isSelected ? '#222' : '#999',
+                    color: isSelected ? "#222" : "#999",
                   }}
                 >
                   {tag}
@@ -65,18 +67,18 @@ function CounselingList({ data = [], selectedId = 1, onDelete }) {
               ))}
             </div>
             {/* 개별 삭제 버튼 (선택적) */}
-              {onDelete && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(item.id);
-                  }}
-                  className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
-                  aria-label="채팅방 삭제"
-                >
-                  <TrashIcon className="w-4 h-4" />
-                </button>
-              )}
+            {onDelete && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(item.id);
+                }}
+                className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
+                aria-label="채팅방 삭제"
+              >
+                <TrashIcon className="w-4 h-4" />
+              </button>
+            )}
           </div>
         );
       })}

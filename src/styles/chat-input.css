@@ -1,9 +1,9 @@
 .chat-textarea {
   max-height: 200px;
   box-sizing: border-box;
-  padding-right: 4.5rem; /* space for send button and scrollbar */
-  padding-bottom: 0.9rem; /* avoid underlapping the button */
-  background: linear-gradient(0deg, rgba(255,255,255,0.25) 100%);
+  padding-right: 4.5rem; /* 보내기 버튼 및 스크롤바를 위한 공간 */
+  padding-bottom: 0.9rem; /* 버튼과 겹치지 않도록 여유 공간 */
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.25) 100%);
   background-size: 400% 400%;
   animation: liquidMove 6s ease infinite;
   overflow-y: auto;
@@ -11,29 +11,44 @@
   scrollbar-gutter: stable;
 }
 
-/* keyframe used in the component */
+/* 컴포넌트에서 사용하는 keyframe */
 @keyframes liquidMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
-/* Remove gray track background in WebKit browsers */
-.chat-textarea::-webkit-scrollbar { width: 10px; }
-.chat-textarea::-webkit-scrollbar-track { background: transparent; }
-.chat-textarea::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.35); border-radius: 8px; }
+/* WebKit 브라우저에서 회색 트랙 배경 제거 */
+.chat-textarea::-webkit-scrollbar {
+  width: 10px;
+}
+.chat-textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chat-textarea::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.35);
+  border-radius: 8px;
+}
 
-/* Firefox */
-.chat-textarea { scrollbar-color: rgba(0,0,0,0.35) transparent; }
+/* Firefox 전용 스타일 */
+.chat-textarea {
+  scrollbar-color: rgba(0, 0, 0, 0.35) transparent;
+}
 
-/* Wrapper to constrain chat input width responsively */
+/* 채팅 입력의 너비를 반응형으로 제한하는 래퍼 */
 .chat-input-wrapper {
-  max-width: 700px; /* at large screens (e.g. 1920px) this becomes 700px */
-  width: min(700px, calc(100vw - 64px)); /* shrink when viewport is smaller */
-  margin: 0 auto; /* center horizontally */
+  max-width: 700px; /* 큰 화면(예: 1920px)에서 최대 너비 700px */
+  width: min(700px, calc(100vw - 64px)); /* 뷰포트가 작을 때 축소됨 */
+  margin: 0 auto; /* 수평 중앙 정렬 */
 }
 
-/* Chat area content wrapper (same responsive behavior as input) */
+/* 채팅 영역 컨텐츠 래퍼 (입력과 동일한 반응형 동작) */
 .chat-content-wrapper {
   max-width: 700px;
   width: min(700px, calc(100vw - 64px));

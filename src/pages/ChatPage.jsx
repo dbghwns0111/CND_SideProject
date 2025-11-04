@@ -1,25 +1,36 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import ChatArea from '../components/ChatArea';
-import LoadingState from '../components/LoadingState';
-import { useChatApi } from '../hooks/useChatApi';
+import React, { useState, useEffect, useCallback } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import ChatArea from "../components/ChatArea";
+import { useChatRooms } from "../store/ChatRoomsContext";
+import LoadingState from "../components/LoadingState";
+import { useChatApi } from "../hooks/useChatApi";
 
 function ChatPage() {
   const { id: urlSessionId } = useParams();
   const navigate = useNavigate();
 
   const [messages, setMessages] = useState([]);
+  const { chatRooms, addMessageToRoom, addChatRoom } = useChatRooms();
   const [options, setOptions] = useState(null);
   const [nextStep, setNextStep] = useState(null);
   const [isBotTyping, setIsBotTyping] = useState(false);
   const [chatLoading, setChatLoading] = useState(true);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
 
-  const { sendStep2, sendStep3, sendStep4, sendStep5, sendFree, loading: apiLoading, error: apiError, loadSession } = useChatApi();
+  const {
+    sendStep2,
+    sendStep3,
+    sendStep4,
+    sendStep5,
+    sendFree,
+    loading: apiLoading,
+    error: apiError,
+    loadSession,
+  } = useChatApi();
 
   useEffect(() => {
     if (!urlSessionId) {
-      navigate('/', { replace: true });
+      navigate("/", { replace: true });
       return;
     }
 
@@ -27,37 +38,69 @@ function ChatPage() {
       try {
         setChatLoading(true);
         // TODO: implement loadSession(urlSessionId) in useChatApi if needed
-        setMessages([]);
+        // Try to load messages from local context first
+        const room = chatRooms.find((r) => r.id === urlSessionId);
+        if (room) {
+          setMessages(room.messages || []);
+        } else {
+          // If room doesn't exist locally, create an empty one so user can start chatting
+          addChatRoom({ id: urlSessionId, text: "", messages: [] });
+          setMessages([]);
+        }
         setOptions(null);
         setNextStep(null);
         setChatLoading(false);
       } catch (error) {
-        console.error('세션 기록 로드 실패:', error);
-        alert('세션 정보를 불러오는 데 실패했습니다.');
-        navigate('/', { replace: true });
+        console.error("세션 기록 로드 실패:", error);
+        alert("세션 정보를 불러오는 데 실패했습니다.");
+        navigate("/", { replace: true });
       }
     };
 
     loadChatHistory();
   }, [urlSessionId, navigate]);
 
-  const addMessage = useCallback((sender, text) => {
-    setMessages(prev => ([
-      ...prev,
-      { sender, text, createdAt: Date.now() },
-    ]));
-  }, []);
+  // Keep messages in sync with ChatRoomsContext so replies added after navigation appear without refresh
+  useEffect(() => {
+    if (!urlSessionId) return;
+    const room = chatRooms.find((r) => r.id === urlSessionId);
+    if (room) {
+      setMessages(room.messages || []);
+    }
+  }, [chatRooms, urlSessionId]);
+
+  const addMessage = useCallback(
+    (sender, text) => {
+      const msg = { sender, text, createdAt: Date.now() };
+      setMessages((prev) => [...prev, msg]);
+      // persist to context
+      if (urlSessionId) {
+        addMessageToRoom(urlSessionId, msg);
+      }
+    },
+    [addMessageToRoom, urlSessionId],
+  );
 
   const handleStep2Select = async (selectedOptions) => {
     if (!urlSessionId) return;
     setIsBotTyping(true);
-    addMessage('user', `[선택] ${Array.isArray(selectedOptions) ? selectedOptions.join(', ') : selectedOptions}`);
+    addMessage(
+      "user",
+      `[선택] ${Array.isArray(selectedOptions) ? selectedOptions.join(", ") : selectedOptions}`,
+    );
 
     const data = await sendStep2(urlSessionId, selectedOptions);
     setIsBotTyping(false);
-    if (!data) return;
+    if (!data) {
+      // fallback assistant reply when backend does not respond
+      addMessage(
+        "bot",
+        "서버 응답이 지연되고 있습니다. 우선 임시 안내를 드립니다.",
+      );
+      return;
+    }
 
-    addMessage('bot', data.message);
+    addMessage("bot", data.message);
     setOptions(data.options || null);
     setNextStep(data.nextStep || null);
   };
@@ -65,13 +108,19 @@ function ChatPage() {
   const handleStep3Select = async (selectedSeverity) => {
     if (!urlSessionId) return;
     setIsBotTyping(true);
-    addMessage('user', `[피해 수위] ${selectedSeverity}`);
+    addMessage("user", `[피해 수위] ${selectedSeverity}`);
 
     const data = await sendStep3(urlSessionId, selectedSeverity);
     setIsBotTyping(false);
-    if (!data) return;
+    if (!data) {
+      addMessage(
+        "bot",
+        "서버 응답이 지연되고 있습니다. 우선 임시 안내를 드립니다.",
+      );
+      return;
+    }
 
-    addMessage('bot', data.message);
+    addMessage("bot", data.message);
     setOptions(data.options || null);
     setNextStep(data.nextStep || null);
   };
@@ -79,13 +128,19 @@ function ChatPage() {
   const handleStep4Submit = async (detail) => {
     if (!urlSessionId) return;
     setIsBotTyping(true);
-    addMessage('user', detail);
+    addMessage("user", detail);
 
     const data = await sendStep4(urlSessionId, detail);
     setIsBotTyping(false);
-    if (!data) return;
+    if (!data) {
+      addMessage(
+        "bot",
+        "서버 응답이 지연되고 있습니다. 우선 임시 안내를 드립니다.",
+      );
+      return;
+    }
 
-    addMessage('bot', data.message);
+    addMessage("bot", data.message);
     setOptions(data.options || null);
     setNextStep(data.nextStep || null);
   };
@@ -93,13 +148,19 @@ function ChatPage() {
   const handleStep5Select = async (selectedOption) => {
     if (!urlSessionId) return;
     setIsBotTyping(true);
-    addMessage('user', `[대처 선택] ${selectedOption}`);
+    addMessage("user", `[대처 선택] ${selectedOption}`);
 
     const data = await sendStep5(urlSessionId, selectedOption);
     setIsBotTyping(false);
-    if (!data) return;
+    if (!data) {
+      addMessage(
+        "bot",
+        "서버 응답이 지연되고 있습니다. 우선 임시 안내를 드립니다.",
+      );
+      return;
+    }
 
-    addMessage('bot', data.message);
+    addMessage("bot", data.message);
     setOptions(data.options || null);
     setNextStep(data.nextStep || null);
   };
@@ -109,21 +170,27 @@ function ChatPage() {
     const question = inputValue.trim();
     if (!question || !urlSessionId) return;
 
-    setInputValue('');
+    setInputValue("");
     setIsBotTyping(true);
-    addMessage('user', question);
+    addMessage("user", question);
 
     const data = await sendFree(urlSessionId, question);
     setIsBotTyping(false);
-    if (!data) return;
+    if (!data) {
+      addMessage(
+        "bot",
+        "서버 응답이 지연되고 있습니다. 우선 임시 안내를 드립니다.",
+      );
+      return;
+    }
 
-    addMessage('bot', data.message);
+    addMessage("bot", data.message);
     setOptions(data.options || null);
     setNextStep(data.nextStep || null);
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleFreeQuestion(e);
     }
@@ -141,12 +208,10 @@ function ChatPage() {
         isBotTyping={isBotTyping}
         options={options}
         nextStep={nextStep}
-
         inputValue={inputValue}
-        onInputChange={e => setInputValue(e.target.value)}
+        onInputChange={(e) => setInputValue(e.target.value)}
         onSubmit={handleFreeQuestion}
         onKeyDown={handleKeyDown}
-
         onSelectOptions={handleStep2Select}
         onSelectSeverity={handleStep3Select}
         onSubmitDetail={handleStep4Submit}

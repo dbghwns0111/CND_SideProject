@@ -1,5 +1,5 @@
-import React from 'react';
-import { HiOutlineSearch } from 'react-icons/hi';
+import React from "react";
+import { HiOutlineSearch } from "react-icons/hi";
 
 /**
  * Search 컴포넌트
@@ -10,32 +10,33 @@ import { HiOutlineSearch } from 'react-icons/hi';
  * @param {string} value - input 값
  */
 function Search({
-  placeholder = '',
-  placeholderClass = 'search-placeholder',
-  inputClass = '',
+  placeholder = "",
+  placeholderClass = "search-placeholder",
+  inputClass = "",
   onChange,
   value,
 }) {
   return (
     <div className="flex items-center w-full">
-        <div className="flex justify-center items-center mr-2">
-            <HiOutlineSearch size={36} className="" />
-        </div>
-        <input
-            type="text"
-            value={value}
-            onChange={onChange}
-            placeholder={placeholder}
-            className={`rounded-lg bg-transparent focus:outline-none border-none ${inputClass} ${placeholderClass}`}
-        />
-        <style>{`
+      <div className="flex justify-center items-center mr-2">
+        <HiOutlineSearch size={36} className="" />
+      </div>
+      <input
+        type="text"
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className={`rounded-lg bg-transparent focus:outline-none border-none ${inputClass} ${placeholderClass}`}
+      />
+      <style>
+        {`
           .${placeholderClass}::placeholder {
             color: #000;
             font-weight: bold;
             font-size: 14px;
           }
         `}
-        </style>
+      </style>
     </div>
   );
 }

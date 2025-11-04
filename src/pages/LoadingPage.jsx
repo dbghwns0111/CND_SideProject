@@ -1,7 +1,7 @@
-import React from 'react';
-import { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-// import { lawkeyLogo } from '../components/icons'; 
+import React from "react";
+import { useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+// import { lawkeyLogo } from '../components/icons';
 
 function LoadingPage() {
   const navigate = useNavigate();
@@ -21,7 +21,9 @@ function LoadingPage() {
   return (
     <div className="flex flex-col items-center justify-center w-full h-screen bg-white">
       <div className="text-2xl font-bold mb-8">LOGO</div>
-      <div className="mb-4 text-gray-500">새로운 대화 세션을 준비 중입니다...</div>
+      <div className="mb-4 text-gray-500">
+        새로운 대화 세션을 준비 중입니다...
+      </div>
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
     </div>
   );
@@ -32,8 +34,8 @@ function LoadingPage() {
 //     <div
 //       className={`
 //         flex flex-col items-center justify-center w-full
-//         transition-opacity ease-in-out duration-500 
-//         ${containerHeightClass} 
+//         transition-opacity ease-in-out duration-500
+//         ${containerHeightClass}
 //         ${loadingFade ? "opacity-100" : "opacity-0"}
 //       `}
 //     >
@@ -42,14 +44,14 @@ function LoadingPage() {
 //         <img src={lawkeyLogo} alt="lawkey Logo" className="w-20 h-20 mb-3 animate-pulse" />
 //         <span className="text-2xl font-bold text-green-700">lawkey</span>
 //       </div>
-      
+
 //       <div className="mb-4 text-gray-500">
 //         새로운 대화 세션을 준비 중입니다...
 //       </div>
-      
+
 //       {/* 로딩 스피너 */}
 //       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-      
+
 //     </div>
 //   );
 // }

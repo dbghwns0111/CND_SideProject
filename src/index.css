@@ -15,11 +15,11 @@
 
 a {
   font-weight: 500;
-  color: #EAEAEA;
+  color: #eaeaea;
   text-decoration: inherit;
 }
 a:hover {
-  color: #EAEAEA;
+  color: #eaeaea;
 }
 
 body {
@@ -42,7 +42,7 @@ button {
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #EAEAEA;
+  border-color: #eaeaea;
 }
 
 aside {
@@ -62,7 +62,7 @@ aside.open {
     background-color: #ffffff;
   }
   a:hover {
-    color: #EAEAEA;
+    color: #eaeaea;
   }
   button {
     background-color: #f9f9f9;
