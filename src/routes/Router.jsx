@@ -12,7 +12,6 @@ function Router() {
           <Route path="/" element={<HomePage />} />
           <Route path="/c/:id" element={<ChatPage />} />
           <Route path="/auth" element={<AuthPage />} />
-          {/* 테스트용 라우트 제거됨 */}
         </Route>
       </Routes>
     </BrowserRouter>

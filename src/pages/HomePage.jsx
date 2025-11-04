@@ -108,7 +108,10 @@ function HomePage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full min-h-screen px-6 md:px-10">
+    <div
+      className="flex flex-col items-center justify-center w-full min-h-screen px-6 md:px-10"
+      style={{ position: "relative" }}
+    >
       {isLoading && (
         <LoadingState
           loadingFade={loadingFade}
@@ -119,20 +122,26 @@ function HomePage() {
       {!isLoading && (
         <div className="flex flex-col items-center w-full max-w-4xl pt-16 pb-24">
           <img src="/logo_icon.svg" alt="lawkey" className="w-16 h-16 mb-4" />
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3 text-center">
+          <p className="font-bold text-gray-800 mb-3 text-center text-[42px]">
             나만의 AI 법률 파트너
-          </h1>
-          <p className="text-gray-600 text-base md:text-lg mb-6 leading-relaxed text-center">
-            혼자 고민하지 마세요.
-            <br />
-            당신의 이야기를 듣고 가장 든든한 편이 되어 드릴게요.
+          </p>
+          <p className="text-gray-600 mb-6 leading-relaxed text-center text-[20px]">
+            당신의 상황을 듣고, 함께 답을 찾아드릴게요.
           </p>
 
-          <div className="relative w-full max-w-2xl">
+          <div
+            className="relative mx-auto"
+            style={{
+              width: "clamp(320px, 44.375vw, 852px)",
+              height: "136px",
+            }}
+          >
             <ChatInput
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onSubmit={handleMessageSubmit}
+              rows={2}
+              inputClassName="h-full"
             />
           </div>
 
@@ -150,9 +159,19 @@ function HomePage() {
             ]}
           />
 
-          <footer className="text-center text-xs text-gray-500 mt-4">
-            * AI가 제공하는 정보는 법적 효력을 갖지 않으며, 전문적인 법률 자문을
-            대체하지 않습니다.
+          <footer
+            className="text-center text-xs text-gray-500 py-4"
+            style={{
+              position: "fixed",
+              bottom: "30px",
+              width: "100%",
+              zIndex: 10,
+            }}
+          >
+            <div className="mx-auto px-6 md:px-10">
+              * AI가 제공하는 정보는 법적 효력을 갖지 않으며, 전문적인 법률 자문을
+              대체하지 않습니다.
+            </div>
           </footer>
         </div>
       )}

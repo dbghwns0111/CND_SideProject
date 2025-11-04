@@ -84,7 +84,7 @@ function SideNavigation({ isSidebarOpen, setIsSidebarOpen }) {
   useEffect(() => {
     const handleResize = () => setIsLargeViewport(window.innerWidth >= 1920);
     window.addEventListener("resize", handleResize);
-    // ensure initial value is correct
+    // initial call to set correct state
     handleResize();
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -235,13 +235,13 @@ function SideNavigation({ isSidebarOpen, setIsSidebarOpen }) {
               <img src="/logo_icon.svg" alt="logoIcon" />
             </button>
             <button onClick={() => setIsSidebarOpen(true)}>
-              <HiOutlineDocumentAdd size="2.25rem" />
+              <HiOutlineDocumentAdd size="2rem" />
             </button>
             <button onClick={() => setIsSidebarOpen(true)}>
-              <HiSearch size="2.25rem" />
+              <HiSearch size="2rem" />
             </button>
             <button onClick={() => setIsSidebarOpen(true)}>
-              <HiOutlineChat size="2.25rem" />
+              <HiOutlineChat size="2rem" />
               <CounselingCounter
                 counselingCount={counselingCount}
                 maxCounselingCount={maxCounselingCount}
@@ -253,27 +253,34 @@ function SideNavigation({ isSidebarOpen, setIsSidebarOpen }) {
         </div>
       )}
 
-      {/* 열림/닫힘 상태에서도 동일한 높이에 표시되도록 사용자 영역 위치 지정 */}
       <div
         style={{
           position: "absolute",
           left: "1rem",
           right: "1rem",
           bottom: "1rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         {isLoggedIn ? (
           <button
-            className="flex items-center gap-[0.75rem] justify-center w-full"
+            className="relative flex items-center justify-center w-full"
             onClick={handleLogout}
           >
-            <HiUserCircle
-              size={isSidebarOpen ? "2.625rem" : "2.25rem"}
-              className="text-lawkey-green"
-            />
-            {isSidebarOpen && (
-              <span className="font-bold text-gray-700">{user?.name} 님</span>
-            )}
+            <div 
+              className={
+                isSidebarOpen
+                  ? "flex items-center gap-[0.75rem]" 
+                  : "flex items-center" 
+              }
+            >
+              <HiUserCircle size={"2.5rem"} className="text-lawkey-green" />
+              {isSidebarOpen && (
+                <span className="font-bold text-gray-700">{user?.name} 님</span>
+              )}
+      </div>
           </button>
         ) : isSidebarOpen ? (
           <div className="flex flex-row justify-center">
@@ -301,7 +308,7 @@ function SideNavigation({ isSidebarOpen, setIsSidebarOpen }) {
             </div>
           </div>
         ) : (
-          <div className="flex items-center justify-center w-[2.75rem] h-[2.75rem] p-[0.5rem] rounded-full bg-[#29CC8B] mx-auto">
+          <div className="flex items-center justify-center w-[2.25rem] h-[2.25rem] p-[0.5rem] rounded-full bg-[#29CC8B] mx-auto">
             <CgLogOut
               size="2.25rem"
               className="text-white"

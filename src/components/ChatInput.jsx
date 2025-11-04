@@ -60,13 +60,12 @@ function ChatInput({
             onChange={onChange}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            rows={1}
+            rows={2}
             className={
               "chat-textarea w-full py-4 pr-24 pl-6 rounded-2xl border border-gray-300 shadow-md focus:outline-none text-sm md:text-base " +
               inputClassName
             }
           />
-          {/* 스타일은 src/styles/chat-input.css로 이동됨 */}
           <button
             type="submit"
             className="absolute right-3 bottom-3 bg-black text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-gray-800 transition z-20"

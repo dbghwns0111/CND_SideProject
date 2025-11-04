@@ -1,5 +1,5 @@
 import React from "react";
-import { HiOutlineChat, HiOutlineTrash as TrashIcon } from "react-icons/hi";
+import { HiOutlineChat } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
 
 const tagColors = {
@@ -33,18 +33,18 @@ function CounselingList({ data = [], selectedId = 1, onDelete }) {
             onKeyPress={(e) => {
               if (e.key === "Enter") navigate(`/c/${item.id}`);
             }}
-            className="relative flex flex-col text-left rounded-lg p-3 transition cursor-pointer bg-white hover:bg-gray-100"
+            className="relative flex flex-col text-left rounded-lg p-3 transition cursor-pointer bg-white hover:bg-gray-100 group"
           >
             {/* 아이콘 + 텍스트 */}
             <div className="flex items-center gap-2">
               <div className="flex-shrink-0">
                 <HiOutlineChat
                   size={22}
-                  className={isSelected ? "text-gray-900" : "text-gray-400"}
+                  className={`${isSelected ? "text-gray-900" : "text-gray-400"} group-hover:text-gray-900`}
                 />
               </div>
               <span
-                className={`truncate text-sm font-bold ${isSelected ? "text-gray-900" : "text-gray-400"}`}
+                className={`truncate text-sm font-bold ${isSelected ? "text-gray-900" : "text-gray-400"} group-hover:text-gray-900`}
               >
                 {item.text}
               </span>
@@ -66,17 +66,17 @@ function CounselingList({ data = [], selectedId = 1, onDelete }) {
                 </span>
               ))}
             </div>
-            {/* 개별 삭제 버튼 (선택적) */}
+            {/* 개별 삭제 버튼: 기본 숨김, 항목에 마우스 호버 시 표시 */}
             {onDelete && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onDelete(item.id);
                 }}
-                className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
+                className="absolute top-1 right-2 text-black hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none group-hover:pointer-events-auto"
                 aria-label="채팅방 삭제"
               >
-                <TrashIcon className="w-4 h-4" />
+                <span className="inline-block w-4 h-4 text-base leading-none">×</span>
               </button>
             )}
           </div>

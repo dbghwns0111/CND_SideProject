@@ -73,7 +73,7 @@ function ChatArea({
           </div>
 
           {/* 입력창 고정 */}
-          <div className="p-4 border-t border-gray-200/20 flex-shrink-0 bg-white/0">
+          <div className="p-4 flex-shrink-0 bg-white/0">
             <ChatInput
               value={inputValue}
               onChange={onInputChange}

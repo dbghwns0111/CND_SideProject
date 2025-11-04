@@ -1,7 +1,7 @@
 import { API_BASE_URL, API_KEY } from "./config";
 
 async function requestApi(endpoint, body) {
-  const response = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
+  const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
