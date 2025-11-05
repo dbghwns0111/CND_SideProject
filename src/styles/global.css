@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @import "./variables.css";
-@tailwind utilities;
 
 button {
   background: transparent;
