@@ -1,5 +1,4 @@
 @import "tailwindcss";
-<<<<<<< HEAD
 @import "./variables.css";
 @tailwind utilities;
 
@@ -10,6 +9,3 @@ button {
   padding: 0;
   cursor: pointer;
 }
-=======
-@tailwind utilities;
->>>>>>> 923e708aa6b9574452fd6aed39795d6c8958e266
