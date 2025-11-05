@@ -1,0 +1,35 @@
+/* side-navigation component styles - variables used, color tokens defined in variables.css */
+.bg-lawkey-green {
+  background-color: var(--lawkey-green) !important;
+}
+.bg-lawkey-green-dark {
+  background-color: var(--lawkey-green-dark) !important;
+}
+.text-lawkey-green {
+  color: var(--lawkey-green) !important;
+}
+
+.sn-login-btn {
+  background-color: var(--lawkey-green);
+  color: #fff;
+  border: none;
+}
+.sn-login-btn:hover {
+  background-color: var(--lawkey-green-dark);
+}
+
+.sn-avatar {
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0.5rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--lawkey-green);
+}
+
+.sn-info-text {
+  font-size: 0.825rem;
+  color: var(--text-muted); /* use neutral token */
+}

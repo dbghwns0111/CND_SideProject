@@ -1,0 +1,24 @@
+/* Design tokens (CSS custom properties) - 공통 변수들 */
+:root {
+  /* colors */
+  --color-primary: #10b981; /* green-500 */
+  --color-primary-dark: #059669; /* green-600 */
+  --lawkey-green: #29cc8b;
+  --lawkey-green-dark: #1fa86a;
+
+  /* neutral */
+  --border: #e5e7eb; /* gray-200 */
+  --text-muted: #6b7280; /* gray-500 */
+  --text-default: #111827; /* gray-900-ish */
+
+  /* chat input */
+  --chat-input-bg: #ffffff;
+  --chat-input-border: var(--border);
+  --chat-input-max-height: 200px;
+
+  /* layout sizes */
+  --sidebar-width: 280px;
+  --sidebar-width-large: 300px;
+  --max-chat-width: 1200px;
+  --max-input-width: 852px;
+}

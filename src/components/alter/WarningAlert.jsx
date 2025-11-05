@@ -12,6 +12,8 @@ function WarningAlert({
   onConfirm,
   onSavePDF,
   user,
+  icon = null,
+  buttonsWrapperClass = null,
 }) {
   const alertRef = useRef(null);
 
@@ -43,20 +45,28 @@ function WarningAlert({
       {/* 대화창 너비를 줄여 큰 화면에서 더 좁게 표시하고 작은 화면에서는 반응형으로 동작하도록 함 */}
       <div className="bg-white rounded-2xl p-6 w-[400px] max-w-[90%] shadow-xl flex flex-col gap-4">
         <div className="flex justify-center">
-          <div className="w-12 h-12 flex items-center justify-center rounded-full border-2 border-[#C43939] text-[#C43939] font-bold text-2xl">
-            !
-          </div>
+          {icon ? (
+            <div className="w-12 h-12 flex items-center justify-center">
+              {icon}
+            </div>
+          ) : (
+            <div className="w-12 h-12 flex items-center justify-center rounded-full border-2 border-[#C43939] text-[#C43939] font-bold text-2xl">
+              !
+            </div>
+          )}
         </div>
         <h2 className="text-center text-lg font-extrabold">{title}</h2>
         <p className="text-center text-sm text-gray-600">{description}</p>
         {/* 버튼을 25% / 50% / 75% 위치에 배치하기 위해 상대 위치 컨테이너를 사용함 */}
         <div className="relative w-full h-14 mt-4">
           {buttons && buttons.length > 0 ? (
-            // if custom buttons provided, render them centered inside a green rounded bar
+            // custom buttons provided: render them centered; wrapper class can be customized
             <div className="flex justify-center">
-              <div className="flex items-center gap-4 p-2 rounded-2xl bg-[#29CC8B]">
-                {buttons.map(({ label, onClick, className }, idx) => {
-                  const extra = label === "확인" ? "hover:text-white" : "";
+              <div
+                className={`flex items-center gap-4 ${buttonsWrapperClass || "p-2 rounded-2xl bg-[#29CC8B]"}`}
+              >
+                {buttons.map(({ label, onClick, className, danger }, idx) => {
+                  const extra = danger ? "hover:text-red-600" : "";
                   return (
                     <button
                       key={idx}

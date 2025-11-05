@@ -1,0 +1,59 @@
+/* chat-input component styles (variables-driven) */
+.chat-textarea {
+  max-height: var(--chat-input-max-height);
+  box-sizing: border-box;
+  padding-right: 4.5rem; /* 보내기 버튼 및 스크롤바를 위한 공간 */
+  padding-bottom: 0.9rem; /* 버튼과 겹치지 않도록 여유 공간 */
+  background: var(--chat-input-bg); /* 배경을 변수로 처리 */
+  overflow-y: auto;
+  resize: none;
+  scrollbar-gutter: stable;
+  border: 1px solid var(--chat-input-border);
+}
+
+/* 컴포넌트에서 사용하는 keyframe */
+@keyframes liquidMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* WebKit 브라우저에서 회색 트랙 배경 제거 */
+.chat-textarea::-webkit-scrollbar {
+  width: 10px;
+}
+.chat-textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chat-textarea::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.35);
+  border-radius: 8px;
+}
+
+/* Firefox 전용 스타일 */
+.chat-textarea {
+  scrollbar-color: rgba(0, 0, 0, 0.35) transparent;
+}
+
+/* 채팅 입력의 너비를 반응형으로 제한하는 래퍼 */
+.chat-input-wrapper {
+  max-width: var(--max-input-width); /* 큰 화면에서 최대 너비 */
+  width: min(var(--max-input-width), calc(100vw - 64px)); /* 뷰포트가 작을 때 축소됨 */
+  margin: 0 auto; /* 수평 중앙 정렬 */
+}
+
+/* 채팅 영역 컨텐츠 래퍼 (입력과 동일한 반응형 동작) */
+.chat-content-wrapper {
+  max-width: var(--max-chat-width); /* 채팅 목록/내용은 더 넓게 허용 */
+  width: min(var(--max-chat-width), calc(100vw - 64px));
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}

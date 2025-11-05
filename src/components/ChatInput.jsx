@@ -1,12 +1,12 @@
 import React, { useRef, useEffect } from "react";
 import { MdSend } from "react-icons/md";
-import "../styles/chat-input.css";
+import "../styles/components/chat-input.css";
 
 function ChatInput({
   value = "",
   onChange = () => {},
   onSubmit = () => {},
-  placeholder = "무슨 일이든 편하게 물어보세요!",
+  placeholder = "지금 어떤 일이 고민이신가요?",
   highlightPlaceholder = "",
   className = "",
   inputClassName = "",
@@ -31,9 +31,9 @@ function ChatInput({
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
       const newValue = value.slice(0, start) + "\n" + value.slice(end);
-      // call parent onChange with synthetic event shape
+      // 부모 콜백에 전달할 때는 일반적인 이벤트 형태({ target: { value } })로 호출함
       onChange({ target: { value: newValue } });
-      // restore caret position after DOM updates
+      // DOM 업데이트 후 캐럿(커서) 위치 복원
       requestAnimationFrame(() => {
         textarea.selectionStart = textarea.selectionEnd = start + 1;
         // trigger resize
@@ -72,9 +72,9 @@ function ChatInput({
             disabled={!value || value.trim() === ""}
           >
             {!value || value.trim() === "" ? (
-              <img src="/enter_off.svg" alt="enter off" className="w-6 h-6" />
+              <img src="/icons/enter_off.svg" alt="enter off" className="w-6 h-6" />
             ) : (
-              <img src="/enter_on.svg" alt="enter on" className="w-6 h-6" />
+              <img src="/icons/enter_on.svg" alt="enter on" className="w-6 h-6" />
             )}
           </button>
         </div>

@@ -1,0 +1,13 @@
+/* main layout utilities */
+.main-layout-bg {
+  background: linear-gradient(to bottom, #ffffff 0%, #ecfdf5 50%, #e6faf0 100%);
+}
+
+.main-container-centered {
+  width: 100%;
+  max-width: 64rem; /* max-w-4xl과 유사 */
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: center;
+}

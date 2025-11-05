@@ -15,7 +15,7 @@ export function ChatRoomsProvider({ children }) {
     }
   });
 
-  // persist chatRooms to localStorage whenever they change
+  // chatRooms가 변경될 때마다 localStorage에 저장
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(chatRooms));
@@ -24,8 +24,8 @@ export function ChatRoomsProvider({ children }) {
     }
   }, [chatRooms]);
 
-  // Add a new chat room only if there are fewer than 5 rooms.
-  // room should be { id, text, messages }
+  // 채팅방은 최대 5개까지만 추가 가능함
+  // room 객체는 { id, text, messages } 형태여야 함
   function addChatRoom(room) {
     if (!room || !room.id) return { success: false, reason: "invalid" };
 
@@ -36,7 +36,7 @@ export function ChatRoomsProvider({ children }) {
       createdAt: room.createdAt || Date.now(),
     };
 
-    // Use functional update and perform duplicate/max checks inside it to avoid race conditions
+  // 상태 업데이트에서 함수형 업데이트를 사용하고, 내부에서 중복 및 최대 개수 검사를 하여 레이스 컨디션을 방지함
     let result = { success: false, reason: "unknown" };
     setChatRooms((prev) => {
       if (prev.find((r) => r.id === toAdd.id)) {
@@ -54,7 +54,7 @@ export function ChatRoomsProvider({ children }) {
     return result;
   }
 
-  // Add a message to a specific chat room and persist
+  // 특정 채팅방에 메시지를 추가하고 변경사항을 저장함
   function addMessageToRoom(roomId, message) {
     if (!roomId || !message) return { success: false, reason: "invalid" };
     setChatRooms((prev) =>
@@ -65,7 +65,7 @@ export function ChatRoomsProvider({ children }) {
     return { success: true };
   }
 
-  // Replace entire messages array for a room (e.g., on load from server)
+  // 특정 채팅방의 메시지 배열을 통째로 교체함 (예: 서버에서 불러올 때)
   function setRoomMessages(roomId, messages) {
     if (!roomId) return { success: false, reason: "invalid" };
     setChatRooms((prev) =>
@@ -78,13 +78,26 @@ export function ChatRoomsProvider({ children }) {
     return { success: true };
   }
 
-  // Update a chat room's id (e.g., replace a temporary local id with server-provided id)
+  // 채팅방의 id를 업데이트함 (예: 로컬 임시 id를 서버에서 받은 id로 교체)
   function updateChatRoomId(oldId, newId) {
     if (!oldId || !newId) return { success: false, reason: "invalid" };
     setChatRooms((prev) => {
       // prevent duplicates if newId already exists
       if (prev.find((r) => r.id === newId)) return prev;
       return prev.map((r) => (r.id === oldId ? { ...r, id: newId } : r));
+    });
+    return { success: true };
+  }
+
+  // 채팅방을 목록 맨 위(최신)로 이동시킴 — 채팅방을 열 때 사용
+  function moveRoomToTop(id) {
+    if (!id) return { success: false, reason: "invalid" };
+    setChatRooms((prev) => {
+      const idx = prev.findIndex((r) => r.id === id);
+      if (idx <= 0) return prev; // already at top or not found
+      const room = prev[idx];
+      const rest = prev.filter((_, i) => i !== idx);
+      return [room, ...rest];
     });
     return { success: true };
   }
@@ -103,6 +116,7 @@ export function ChatRoomsProvider({ children }) {
         chatRooms,
         addChatRoom,
         updateChatRoomId,
+        moveRoomToTop,
         addMessageToRoom,
         setRoomMessages,
         removeChatRoom,

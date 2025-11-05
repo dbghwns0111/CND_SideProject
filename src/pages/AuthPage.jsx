@@ -18,7 +18,7 @@ export default function AuthPage() {
     <div className="min-h-screen flex items-center bg-gradient-to-b from-white via-green-50 to-green-100 p-6">
       <div className="w-full max-w-4xl mx-auto flex justify-center">
         <div className="w-full max-w-sm p-6 flex flex-col items-center">
-          <img src="/full_logo.svg" alt="Lawkey" className="mb-6 w-40 h-auto" />
+          <img src="/icons/full_logo.svg" alt="Lawkey" className="mb-6 w-40 h-auto" />
           <div className="w-full rounded-xl bg-white p-6 flex flex-col items-center shadow-lg">
             <h2 className="text-2xl font-bold mb-5 text-center">
               로그인 | 회원가입

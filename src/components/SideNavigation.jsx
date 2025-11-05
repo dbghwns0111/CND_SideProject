@@ -14,7 +14,7 @@ import CounselingList from "./CounselingList";
 import WarningAlert from "./alter/WarningAlert";
 import { useChatRooms } from "../store/ChatRoomsContext";
 import { useAuth } from "../store/hooks/useAuth";
-import "../styles/side-navigation.css";
+import "../styles/components/side-navigation.css";
 
 function SideNavigation({ isSidebarOpen, setIsSidebarOpen }) {
   const { isLoggedIn, user, login, logout } = useAuth();
@@ -25,22 +25,14 @@ function SideNavigation({ isSidebarOpen, setIsSidebarOpen }) {
     typeof window !== "undefined" ? window.innerWidth >= 1920 : false,
   );
   const [maxCounselingCount, setMaxCounselingCount] = useState(5);
-  const { chatRooms, removeChatRoom, clearChatRooms } = useChatRooms();
+  const { chatRooms, removeChatRoom } = useChatRooms();
   const [pendingDeleteId, setPendingDeleteId] = useState(null);
   const [showMaxRoomsLimit, setShowMaxRoomsLimit] = useState(false);
   const [counselingCount, setCounselingCount] = useState(chatRooms.length);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
-  const handleDelete = () => {
-    // Deprecated: use handleConfirmDelete via modal
-    clearChatRooms();
-    setIsAlertOpen(false);
-    // After clearing all rooms, navigate to home
-    navigate("/");
-  };
-
   const handleConfirmDelete = () => {
-    // If a specific room is pending deletion, delete it; otherwise clear all
+    // Only support individual deletion. If pendingDeleteId is set, remove that room.
     if (pendingDeleteId) {
       removeChatRoom(pendingDeleteId);
       // if deleting current open room, navigate home
@@ -48,10 +40,8 @@ function SideNavigation({ isSidebarOpen, setIsSidebarOpen }) {
         navigate("/");
       }
       setPendingDeleteId(null);
-    } else {
-      clearChatRooms();
-      navigate("/");
     }
+    // Close the alert in all cases; do not support clearing all rooms
     setIsAlertOpen(false);
   };
 
@@ -149,7 +139,7 @@ function SideNavigation({ isSidebarOpen, setIsSidebarOpen }) {
               aria-label="홈으로 이동"
             >
               <img
-                src="/full_logo.svg"
+                src="/icons/full_logo.svg"
                 alt="fullLogo"
                 className="w-[8rem] cursor-pointer"
               />
@@ -197,16 +187,7 @@ function SideNavigation({ isSidebarOpen, setIsSidebarOpen }) {
                     />
                   </div>
 
-                  <button
-                    className="ml-[0.5rem] text-gray-400 hover:text-gray-600"
-                    title="reset counseling history"
-                    onClick={() => {
-                      setPendingDeleteId(null);
-                      setIsAlertOpen(true);
-                    }}
-                  >
-                    <HiOutlineTrash size="1.75rem" />
-                  </button>
+                  {/* 전체 삭제 버튼 제거: 개별 삭제만 사용함 */}
                 </div>
                 <div className="flex-1 overflow-y-auto">
                   <CounselingList
@@ -232,7 +213,7 @@ function SideNavigation({ isSidebarOpen, setIsSidebarOpen }) {
                 navigate("/");
               }}
             >
-              <img src="/logo_icon.svg" alt="logoIcon" />
+              <img src="/icons/logo_icon.svg" alt="logoIcon" />
             </button>
             <button onClick={() => setIsSidebarOpen(true)}>
               <HiOutlineDocumentAdd size="2rem" />
@@ -269,29 +250,29 @@ function SideNavigation({ isSidebarOpen, setIsSidebarOpen }) {
             className="relative flex items-center justify-center w-full"
             onClick={handleLogout}
           >
-            <div 
+            <div
               className={
                 isSidebarOpen
-                  ? "flex items-center gap-[0.75rem]" 
-                  : "flex items-center" 
+                  ? "flex items-center gap-[0.75rem]"
+                  : "flex items-center"
               }
             >
               <HiUserCircle size={"2.5rem"} className="text-lawkey-green" />
               {isSidebarOpen && (
                 <span className="font-bold text-gray-700">{user?.name} 님</span>
               )}
-      </div>
+            </div>
           </button>
         ) : isSidebarOpen ? (
           <div className="flex flex-row justify-center">
             <div className="relative group">
               <button
                 onClick={handleLogin}
-                className="px-[1rem] py-[0.5rem] rounded-full sn-login-btn w-[10rem] font-bold"
+                className="px-[1rem] py-[0.5rem] rounded-full sn-login-btn w-[13rem] h-[2rem] font-bold"
                 aria-describedby="signupTooltip"
               >
                 <span className="text-white text-[0.875rem] font-bold">
-                  로그인 / 회원가입
+                  로그인 | 회원가입
                 </span>
               </button>
 
@@ -300,7 +281,7 @@ function SideNavigation({ isSidebarOpen, setIsSidebarOpen }) {
                 role="status"
                 className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity pointer-events-none"
               >
-                <div className="bg-gray-800 text-white text-xs rounded px-3 py-1 whitespace-nowrap shadow">
+                <div className="bg-gray-800 text-white text-[10px] rounded-full px-3 py-1 whitespace-nowrap shadow">
                   회원가입 시 상담 10배로 가능!
                 </div>
                 <div className="w-2 h-2 bg-gray-800 rotate-45 mt-[-6px] mx-auto" />
@@ -369,9 +350,7 @@ const CounselingCounter = ({ counselingCount, maxCounselingCount }) => {
         {counselingCount}
       </span>
       <span className="mx-[0.25rem]">/</span>
-      <span className={isExceeded ? "text-red-500" : "text-gray-900"}>
-        {maxCounselingCount}
-      </span>
+      <span className="text-gray-900">{maxCounselingCount}</span>
     </span>
   );
 };

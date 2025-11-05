@@ -1,6 +1,7 @@
 import React from "react";
 import { HiOutlineChat } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
+import { useChatRooms } from "../store/ChatRoomsContext";
 
 const tagColors = {
   "피해자 신분": "#C5D7EF",
@@ -18,6 +19,7 @@ const defaultTagColor = "#E5E7EB"; // gray-200
 function CounselingList({ data = [], selectedId = 1, onDelete }) {
   // 임시로 SelectedId 설정
   const navigate = useNavigate();
+  const { moveRoomToTop } = useChatRooms();
 
   return (
     <div className="flex flex-col gap-2">
@@ -29,7 +31,15 @@ function CounselingList({ data = [], selectedId = 1, onDelete }) {
             key={item.id}
             role="button"
             tabIndex={0}
-            onClick={() => navigate(`/c/${item.id}`)}
+            onClick={() => {
+              // move this room to top (most-recent) when opened, then navigate
+              try {
+                moveRoomToTop?.(item.id);
+              } catch (e) {
+                // ignore
+              }
+              navigate(`/c/${item.id}`);
+            }}
             onKeyPress={(e) => {
               if (e.key === "Enter") navigate(`/c/${item.id}`);
             }}
@@ -76,7 +86,9 @@ function CounselingList({ data = [], selectedId = 1, onDelete }) {
                 className="absolute top-1 right-2 text-black hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none group-hover:pointer-events-auto"
                 aria-label="채팅방 삭제"
               >
-                <span className="inline-block w-4 h-4 text-base leading-none">×</span>
+                <span className="inline-block w-4 h-4 text-base leading-none">
+                  ×
+                </span>
               </button>
             )}
           </div>

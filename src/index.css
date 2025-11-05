@@ -1,5 +1,4 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -13,6 +12,13 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Pretendard 모듈화: src/styles/pretendard.css를 통해 로컬 Pretendard를 불러옵니다. */
+@import './styles/pretendard.css';
+
+/* Pretendard를 기본 서체로 설정합니다. font-family는 body에 적용(모든 요소 상속) */
+body {
+  font-family: 'Pretendard Variable', Pretendard, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
 a {
   font-weight: 500;
   color: #eaeaea;

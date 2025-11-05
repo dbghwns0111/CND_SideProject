@@ -12,7 +12,7 @@ function LoadingState({ loadingFade, containerHeightClass = "h-[70vh]" }) {
     >
       <div className="flex flex-col items-center mb-8">
         <img
-          src="/logo_icon.svg"
+          src="/icons/logo_icon.svg"
           alt="lawkey Logo"
           className="w-20 h-20 mb-3 animate-pulse"
         />

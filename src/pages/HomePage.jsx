@@ -4,6 +4,7 @@ import ChatInput from "../components/ChatInput";
 import LoadingState from "../components/LoadingState";
 import { useChatApi } from "../hooks/useChatApi";
 import { useChatRooms } from "../store/ChatRoomsContext";
+import { useAuth } from "../store/hooks/useAuth";
 import WarningAlert from "../components/alter/WarningAlert";
 
 function HomePage() {
@@ -15,6 +16,7 @@ function HomePage() {
   const { sendStep1 } = useChatApi();
   const { chatRooms, addChatRoom, updateChatRoomId, addMessageToRoom } =
     useChatRooms();
+  const { isLoggedIn } = useAuth();
   const [showMaxRoomsAlert, setShowMaxRoomsAlert] = useState(false);
 
   const handleMessageSubmit = async (e) => {
@@ -121,11 +123,11 @@ function HomePage() {
 
       {!isLoading && (
         <div className="flex flex-col items-center w-full max-w-4xl pt-16 pb-24">
-          <img src="/logo_icon.svg" alt="lawkey" className="w-16 h-16 mb-4" />
-          <p className="font-bold text-gray-800 mb-3 text-center text-[42px]">
+            <img src="/icons/logo_icon.svg" alt="lawkey" className="w-16 h-16 mb-4" />
+          <p className="font-bold text-gray-800 text-center text-[42px]">
             나만의 AI 법률 파트너
           </p>
-          <p className="text-gray-600 mb-6 leading-relaxed text-center text-[20px]">
+          <p className="text-gray-600 mb-10 leading-relaxed text-center text-[20px]">
             당신의 상황을 듣고, 함께 답을 찾아드릴게요.
           </p>
 
@@ -148,15 +150,44 @@ function HomePage() {
           <WarningAlert
             isOpen={showMaxRoomsAlert}
             onClose={() => setShowMaxRoomsAlert(false)}
-            title="채팅방 생성 제한"
-            description={`채팅방은 최대 ${5}개까지 생성할 수 있습니다. 기존 채팅방을 삭제한 후 다시 시도하세요.`}
-            buttons={[
-              {
-                label: "확인",
-                onClick: () => setShowMaxRoomsAlert(false),
-                className: "bg-[#29CC8B] text-white",
-              },
-            ]}
+            title={isLoggedIn ? "채팅방 생성 제한" : ""}
+            description={
+              isLoggedIn
+                ? `채팅방은 최대 ${5}개까지 생성할 수 있습니다. 기존 채팅방을 삭제한 후 다시 시도하세요.`
+                : `더 많은 상담방은\n회원가입 후 이용할 수 있습니다.`
+            }
+            icon={
+              !isLoggedIn ? (
+                <img src="/icons/logo_icon.svg" alt="logo" className="w-12 h-12" />
+              ) : null
+            }
+            buttons={
+              isLoggedIn
+                ? [
+                    {
+                      label: "확인",
+                      onClick: () => setShowMaxRoomsAlert(false),
+                      className: "bg-[#29CC8B] text-white",
+                    },
+                  ]
+                : [
+                    {
+                      label: "확인",
+                      onClick: () => setShowMaxRoomsAlert(false),
+                      className:
+                        "border border-gray-300 px-4 py-2 rounded-full",
+                    },
+                    {
+                      label: "회원가입",
+                      onClick: () => {
+                        setShowMaxRoomsAlert(false);
+                        navigate("/auth");
+                      },
+                      className: "bg-black text-white px-4 py-2 rounded-full",
+                    },
+                  ]
+            }
+            buttonsWrapperClass={isLoggedIn ? null : "gap-4"}
           />
 
           <footer
@@ -169,8 +200,8 @@ function HomePage() {
             }}
           >
             <div className="mx-auto px-6 md:px-10">
-              * AI가 제공하는 정보는 법적 효력을 갖지 않으며, 전문적인 법률 자문을
-              대체하지 않습니다.
+              * AI가 제공하는 정보는 법적 효력을 갖지 않으며, 전문적인 법률
+              자문을 대체하지 않습니다.
             </div>
           </footer>
         </div>

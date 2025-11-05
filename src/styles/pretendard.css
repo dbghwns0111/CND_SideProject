@@ -1,0 +1,9 @@
+/*
+  Local Pretendard font module.
+  이 파일은 로컬 Pretendard 폴더의 CSS를 가져옵니다.
+  목적: 폰트 로드를 모듈화하여 다른 스타일 파일에서 쉽게 import 할 수 있게 합니다.
+*/
+/* moved Pretendard assets into public/fonts/pretendard -> serve from /fonts/pretendard */
+@import url('/fonts/pretendard/web/variable/pretendardvariable.css');
+
+/* 필요 시 추가적인 @font-face 오버라이드 또는 폰트 로딩 옵션을 이곳에 둡니다. */

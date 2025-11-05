@@ -49,7 +49,7 @@ function ChatArea({
                   >
                     <div className="flex items-center justify-center w-8 h-8 bg-transparent overflow-hidden">
                       <img
-                        src="/logo_icon.svg"
+                        src="/icons/logo_icon.svg"
                         alt="lawkey"
                         className="w-full h-full object-cover"
                       />
